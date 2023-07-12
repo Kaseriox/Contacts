@@ -1,4 +1,4 @@
-import HomePage from '../views/HomePage.vue'
+import HomePage from '../Views/HomePage.vue'
 import DetailedContacts from '../Views/DetailedContacts.vue'
 import AdminLogin from '../Views/AdminLogin.vue'
 import AccountManage from '../Views/AccountManage.vue'
