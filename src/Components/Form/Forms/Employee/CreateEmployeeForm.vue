@@ -24,14 +24,14 @@
                     <div class="space-y-4">
                         <Select ref="CompanySelect" v-model="Data.company_id" :label="'Įmonė:'"
                             :placeholder="'Pasirinkite įmonę...'" :options="Companies" />
-                        <Select ref="DivisionSelect" v-model="Data.division_id" :label="'Padalinys:'"
-                            :placeholder="'Pasirinkite diviziją...'" :options="Divisions" />
-                        <Select ref="DepartmentSelect" v-model="Data.department_id" :label="'Skyrius:'"
-                            :placeholder="'Pasirinkite departamentą...'" :options="Departments" />
-                        <Select ref="GroupSelect" v-model="Data.group_id" :label="'Grupė:'"
-                            :placeholder="'Pasirinkite grupę...'" :options="Groups" />
-                        <Select ref="OfficeSelect" v-model="Data.office_id" :label="'Ofisas:'"
+                        <Select v-if="Data.company_id!==''" ref="OfficeSelect" v-model="Data.office_id" :label="'Ofisas:'"
                             :placeholder="'Pasirinkite ofisą...'" :options="Offices" />
+                        <Select v-if="Data.office_id!==''" ref="DivisionSelect" v-model="Data.division_id" :label="'Padalinys:'"
+                            :placeholder="'Pasirinkite diviziją...'" :options="Divisions" />
+                        <Select v-if="Data.division_id!==''" ref="DepartmentSelect" v-model="Data.department_id" :label="'Skyrius:'"
+                            :placeholder="'Pasirinkite departamentą...'" :options="Departments" />
+                        <Select v-if="Data.department_id!==''" ref="GroupSelect" v-model="Data.group_id" :label="'Grupė:'"
+                            :placeholder="'Pasirinkite grupę...'" :options="Groups" />
                     </div>
                 </div>
 
@@ -90,20 +90,6 @@ export default {
             Departments: [],
             Offices: [],
 
-
-            ManyTables: {
-                companies_offices: [],
-                offices_divisions: [],
-                divisions_departments: [],
-                departments_groups: [],
-            },
-            Filters: {
-                companies: new Set(),
-                offices: new Set(),
-                divisions: new Set(),
-                departments: new Set(),
-                groups: new Set(),
-            }
         };
     },
     methods: {
@@ -112,140 +98,70 @@ export default {
             set_message: 'Notification/set_data',
             refresh: "Refresh/refresh"
         }),
-        async GetData() {
-            this.Filter()
-            await this.GetOffices()
-            await this.GetCompanies()
-            await this.GetDepartments()
-            await this.GetDivisions()
-            await this.GetGroups()
-        },
-        Filter() {
-            let allCombinations = [];
-
-            this.ManyTables.companies_offices.forEach(co => {
-                const matchingDivisions = this.ManyTables.offices_divisions.filter(od => od.office_id === co.office_id);
-                matchingDivisions.forEach(md => {
-                    const matchingDepartments = this.ManyTables.divisions_departments.filter(dd => dd.division_id === md.division_id);
-                    matchingDepartments.forEach(dd => {
-                        const matchingGroups = this.ManyTables.departments_groups.filter(dg => dg.department_id === dd.department_id);
-                        matchingGroups.forEach(mg => {
-                            allCombinations.push({
-                                company_id: co.company_id,
-                                office_id: co.office_id,
-                                division_id: md.division_id,
-                                department_id: dd.department_id,
-                                group_id: mg.group_id
-                            });
-                        });
-                    });
-                });
-            });
-            
-            if(this.Data.company_id !== '')
-            {
-                allCombinations = allCombinations.filter(combination => combination.company_id === this.Data.company_id)
-            }
-            if(this.Data.office_id !== '')
-            {
-                allCombinations = allCombinations.filter(combination => combination.office_id === this.Data.office_id)
-            }
-            if(this.Data.department_id !== '')
-            {
-                allCombinations = allCombinations.filter(combination => combination.department_id === this.Data.department_id)
-            }
-            if(this.Data.group_id !== '')
-            {
-                allCombinations =  allCombinations.filter(combination => combination.group_id === this.Data.group_id)
-            }
-            if(this.Data.division_id !== '')
-            {
-                allCombinations = allCombinations.filter(combination => combination.division_id === this.Data.division_id)
-            }
-
-                this.Filters.companies = new Set(),
-                this.Filters.offices = new Set(),
-                this.Filters.divisions = new Set(),
-                this.Filters.departments = new Set(),
-                this.Filters.groups = new Set()
-
-            for(const combination of allCombinations)
-            {
-                this.Filters.companies.add(combination.company_id)
-                this.Filters.offices.add(combination.office_id)
-                this.Filters.divisions.add(combination.division_id)
-                this.Filters.departments.add(combination.department_id)
-                this.Filters.groups.add(combination.group_id)
-            }
-
-
-        },
-        async GetManyCollections() {
-            for (const key of Object.keys(this.ManyTables)) {
-                this.ManyTables[key] = (await this.$GetCollection({ Collection: key, ItemsPerPage: 'All' })).items
-            }
-        },
         async GetCompanies() {
-            const companies = []
-            for (const company of this.Filters.companies) {
-                companies.push(`id='${company}'`)
-            }
             const response = (await this.$GetCollection({
-                Collection: 'companies', ItemsPerPage: 'All', query: {
-                    filter: companies.join('||')
-                }
+                Collection: 'companies', ItemsPerPage: 'All'
             })).items
             this.Companies = response
         },
         async GetOffices() {
-            const offices = []
-            for (const office of this.Filters.offices) {
-                offices.push(`id='${office}'`)
-            }
+            const temp = []
             const response = (await this.$GetCollection({
-                Collection: 'offices', ItemsPerPage: 'All', query: {
-                    filter: offices.join('||')
+                Collection: 'companies_offices', ItemsPerPage: 'All',query:{
+                    filter:`company_id='${this.Data.company_id}'`,
+                    expand:'office_id'
                 }
             })).items
-            this.Offices = response
-        },
-        async GetDepartments() {
-            const departments = []
-            for (const department of this.Filters.departments) {
-                departments.push(`id='${department}'`)
+            for(const office of response)
+            {
+                temp.push(office.expand.office_id)
             }
-            const response = (await this.$GetCollection({
-                Collection: 'departments', ItemsPerPage: 'All', query: {
-                    filter: departments.join('||')
-                }
-            })).items
-            this.Departments = response
-        },
-        async GetGroups() {
-            const groups = []
-            for (const group of this.Filters.groups) {
-                groups.push(`id='${group}'`)
-            }
-            const response = (await this.$GetCollection({
-                Collection: 'groups', ItemsPerPage: 'All', query: {
-                    filter: groups.join('||')
-                }
-            })).items
-            this.Groups = response
+            this.Offices = temp
         },
         async GetDivisions() {
-            const divisions = []
-            for (const division of this.Filters.divisions) {
-                divisions.push(`id='${division}'`)
-            }
+            const temp = []
             const response = (await this.$GetCollection({
-                Collection: 'divisions', ItemsPerPage: 'All', query: {
-                    filter: divisions.join('||')
+                Collection: 'offices_divisions', ItemsPerPage: 'All',query:{
+                    filter:`office_id='${this.Data.office_id}'`,
+                    expand:'division_id'
                 }
             })).items
-            this.Divisions = response
+            for(const division of response)
+            {
+                temp.push(division.expand.division_id)
+            }
+            this.Divisions = temp
         },
-
+        async GetDepartments()
+        {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'divisions_departments', ItemsPerPage: 'All',query:{
+                    filter:`division_id='${this.Data.division_id}'`,
+                    expand:'department_id'
+                }
+            })).items
+            for(const department of response)
+            {
+                temp.push(department.expand.department_id)
+            }
+            this.Departments = temp
+        },
+        async GetGroups()
+        {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'departments_groups', ItemsPerPage: 'All',query:{
+                    filter:`department_id='${this.Data.department_id}'`,
+                    expand:'group_id'
+                }
+            })).items
+            for(const group of response)
+            {
+                temp.push(group.expand.group_id)
+            }
+            this.Groups = temp
+        },
         async HandleForm() {
             this.ResetErrors()
             if (!this.ValidateForm()) {
@@ -312,12 +228,12 @@ export default {
                 valid = false
             }
 
-            if (this.$refs.DivisionSelect.value === '') {
+            if (this.$refs.DivisionSelect?.value === '') {
                 this.$refs.DivisionSelect.error = 'Please Select Division'
                 valid = false
             }
 
-            if (this.$refs.OfficeSelect.value === '') {
+            if (this.$refs.OfficeSelect?.value === '') {
                 this.$refs.OfficeSelect.error = 'Please Select Office'
                 valid = false
             }
@@ -331,27 +247,46 @@ export default {
         },
     },
     watch: {
-        async 'Data.company_id'() {
-
-            await this.GetData()
-
+        'Data.company_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.division_id=''
+            this.Data.group_id=''
+            this.Data.office_id=''
+            }
+            this.GetOffices()
         },
-        async 'Data.office_id'() {
-            await this.GetData()
+        'Data.office_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.division_id=''
+            this.Data.group_id=''
+            }
+            this.GetDivisions()
         },
-        async 'Data.division_id'() {
-            await this.GetData()
+        'Data.division_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.group_id=''
+            }
+            this.GetDepartments()
+            
         },
-        async 'Data.department_id'() {
-            await this.GetData()
-        },
-        async 'Data.group_id'() {
-            await this.GetData()
+        'Data.department_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.group_id=''
+            }
+                
+                this.GetGroups()
+           
         },
     },
     async created() {
-        await this.GetManyCollections()
-        await this.GetData()
+        await this.GetCompanies()
         this.Ready = true
     }
 

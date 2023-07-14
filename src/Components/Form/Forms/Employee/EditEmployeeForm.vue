@@ -19,11 +19,16 @@
                     <div class="p-6">
                         <div class=" text-center text-2xl">Įmonės detalės:</div>
                         <div class="space-y-4">
-                            <Select ref="CompanySelect" v-model="Data.company_id" :label="'Įmonė:'" :placeholder="'Pasirinkite įmonę...'" :options="Companies" />
-                            <Select ref="DivisionSelect" v-model="Data.division_id" :label="'Padalinys:'" :placeholder="'Pasirinkite diviziją...'" :options="Divisions" />
-                            <Select ref="DepartmentSelect" v-model="Data.department_id" :label="'Skyrius:'" :placeholder="'Pasirinkite departamentą...'" :options="Departments" />
-                            <Select ref="GroupSelect" v-model="Data.group_id" :label="'Grupė:'" :placeholder="'Pasirinkite grupę...'" :options="Groups" />
-                            <Select ref="OfficeSelect" v-model="Data.office_id" :label="'Ofisas:'" :placeholder="'Pasirinkite ofisą...'" :options="Offices" />
+                            <Select ref="CompanySelect" v-model="Data.company_id" :label="'Įmonė:'"
+                                :placeholder="'Pasirinkite įmonę...'" :options="Companies" />
+                            <Select v-if="Data.company_id!==''" ref="OfficeSelect" v-model="Data.office_id" :label="'Ofisas:'"
+                                :placeholder="'Pasirinkite ofisą...'" :options="Offices" />
+                            <Select v-if="Data.office_id!==''" ref="DivisionSelect" v-model="Data.division_id" :label="'Padalinys:'"
+                                :placeholder="'Pasirinkite diviziją...'" :options="Divisions" />
+                            <Select v-if="Data.division_id!==''" ref="DepartmentSelect" v-model="Data.department_id" :label="'Skyrius:'"
+                                :placeholder="'Pasirinkite departamentą...'" :options="Departments" />
+                            <Select v-if="Data.department_id!==''" ref="GroupSelect" v-model="Data.group_id" :label="'Grupė:'"
+                                :placeholder="'Pasirinkite grupę...'" :options="Groups" />
                         </div>
                     </div>
 
@@ -85,6 +90,70 @@ export default {
             set_message:'Notification/set_data',
             refresh:"Refresh/refresh"
         }),
+        async GetCompanies() {
+            const response = (await this.$GetCollection({
+                Collection: 'companies', ItemsPerPage: 'All'
+            })).items
+            this.Companies = response
+        },
+        async GetOffices() {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'companies_offices', ItemsPerPage: 'All',query:{
+                    filter:`company_id='${this.Data.company_id}'`,
+                    expand:'office_id'
+                }
+            })).items
+            for(const office of response)
+            {
+                temp.push(office.expand.office_id)
+            }
+            this.Offices = temp
+        },
+        async GetDivisions() {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'offices_divisions', ItemsPerPage: 'All',query:{
+                    filter:`office_id='${this.Data.office_id}'`,
+                    expand:'division_id'
+                }
+            })).items
+            for(const division of response)
+            {
+                temp.push(division.expand.division_id)
+            }
+            this.Divisions = temp
+        },
+        async GetDepartments()
+        {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'divisions_departments', ItemsPerPage: 'All',query:{
+                    filter:`division_id='${this.Data.division_id}'`,
+                    expand:'department_id'
+                }
+            })).items
+            for(const department of response)
+            {
+                temp.push(department.expand.department_id)
+            }
+            this.Departments = temp
+        },
+        async GetGroups()
+        {
+            const temp = []
+            const response = (await this.$GetCollection({
+                Collection: 'departments_groups', ItemsPerPage: 'All',query:{
+                    filter:`department_id='${this.Data.department_id}'`,
+                    expand:'group_id'
+                }
+            })).items
+            for(const group of response)
+            {
+                temp.push(group.expand.group_id)
+            }
+            this.Groups = temp
+        },
         async HandleForm()
         { 
             this.ResetErrors()
@@ -147,13 +216,13 @@ export default {
                 valid=false
             }
             
-            if(this.$refs.DivisionSelect.value === '')
+            if(this.$refs.DivisionSelect?.value === '')
             {
                 this.$refs.DivisionSelect.error = 'Please Select Division'
                 valid=false
             }
 
-            if(this.$refs.OfficeSelect.value === '')
+            if(this.$refs.OfficeSelect?.value === '')
             {
                 this.$refs.OfficeSelect.error = 'Please Select Office'
                 valid=false
@@ -173,6 +242,45 @@ export default {
         ...mapGetters({
             id:'Form/id'
         })
+    },
+    watch: {
+        'Data.company_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.division_id=''
+            this.Data.group_id=''
+            this.Data.office_id=''
+            }
+            this.GetOffices()
+        },
+        'Data.office_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.division_id=''
+            this.Data.group_id=''
+            }
+            this.GetDivisions()
+        },
+        'Data.division_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.department_id=''
+            this.Data.group_id=''
+            }
+            this.GetDepartments()
+            
+        },
+        'Data.department_id'(newvalue,oldvalue) {
+            if(newvalue ==='' && oldvalue!=='')
+            {
+            this.Data.group_id=''
+            }
+                
+                this.GetGroups()
+           
+        },
     },
     async created()
     {
