@@ -5,6 +5,7 @@ import Form from "./modules/Form"
 import Notification from "./modules/Notification"
 import StructurePage from "./modules/StructurePage"
 import Refresh from "./modules/Refresh"
+import Status from "./modules/Status"
 export default {
     modules: {
         Paging,
@@ -13,6 +14,7 @@ export default {
         Form,
         Notification,
         StructurePage,
-        Refresh
+        Refresh,
+        Status
     },
 }

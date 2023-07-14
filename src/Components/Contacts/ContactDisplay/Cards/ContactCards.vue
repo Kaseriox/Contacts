@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import Card from './Card.vue';
 export default {
 components: {Card},

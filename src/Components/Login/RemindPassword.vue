@@ -26,6 +26,7 @@
   
   <script>
   import Input from '../InputField/InputField.vue'
+  import { mapActions } from 'vuex';
     export default {
       components:{Input},
       data(){
@@ -34,17 +35,25 @@
         }
       },
       methods:{
-  
+        ...mapActions({
+          set_message:'Notification/set_data'
+        }),
         async HandleForm()
         {
           const Reset = await this.$PasswordReset(this.Email)
-          if(Reset)
+          if(Reset.status === 400)
           {
-            this.$emit('ChangeComponent')
+            this.set_message({message:'Incorrect Email',type:'error'})
+            return
           }
-          else
+          if(Reset.status === 0)
           {
-            console.log('failed')
+            this.set_message({message:'Server Not Responding',type:'error'})
+            return
+          }
+          if(Reset.token !== undefined)
+          {
+              this.set_message({message:'Password Change Requested',type:'success'})
           }
         },
         Back()

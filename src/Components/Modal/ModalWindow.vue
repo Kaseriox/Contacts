@@ -1,6 +1,6 @@
 <template>
-    <div class="fixed left-0 top-0 z-10 w-full h-full bg-black/[.3]  flex justify-center items-center shadow-2xl p-48" v-if="Active">
-        <div class="bg-white">
+    <div class="fixed left-0 top-0 z-10 w-full h-full bg-black/[.3]  flex justify-center items-center shadow-2xl py-10" v-if="Active">
+        <div class="bg-white relative overflow-y-auto  max-h-[100vh]">
             <component :is="Component"></component>
         </div>
     </div>

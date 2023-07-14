@@ -111,7 +111,7 @@ export default {
 
             const nameRegex= /^[A-Za-z]+$/
             const emailRegex= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            const phoneRegex = /^(?:\+370|8)[6-8]\d{7}$/
+            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/
 
             if(!nameRegex.test(this.$refs.NameInput.value) || !(this.$refs.NameInput.value.length > 2))
             {

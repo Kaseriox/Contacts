@@ -1,5 +1,5 @@
 <template>
-  <div v-if="Contacts">
+  <div>
     <p class=" font-thin text-6xl mb-6">Kontaktų Sistema</p>
 
     <div class="flex flex-row items-center mb-2">
@@ -12,7 +12,7 @@
     <ContactsPerPage/>
     <Filtering :Expand="Contacts" class="mb-2"/>
 
-    <div class="mb-2">
+    <div class="mb-2" v-if="Contacts">
          <component :is="ViewComponent" :data="SetData()" :fields="SetFields()" :permissions="SetPermissions()" />
     </div>
 
@@ -24,11 +24,11 @@
   
   <script>
   import ItemsFound from './Paging/ItemsFound.vue';
-  import ContactsPerPage from './Contact Display/ContactsPerPage.vue';
+  import ContactsPerPage from './ContactDisplay/ContactsPerPage.vue';
   import Table from '../Reusables/Table.vue';
-  import ContactCards from './Contact Display/Cards/ContactCards.vue';
+  import ContactCards from './ContactDisplay/Cards/ContactCards.vue';
   import Search from './Search/Search.vue';
-  import ViewChange from './Contact Display/ViewChange.vue';
+  import ViewChange from './ContactDisplay/ViewChange.vue';
   import Filtering from './Filtering/Filtering.vue'
   import Paging from './Paging/Paging.vue';
   import FormButton from '../Form/FormButton.vue';
@@ -58,8 +58,8 @@
               filter:this.FilterString,
             }
           })
-          this.set_item_count(this.Contacts.totalItems)
-          this.Contacts = this.Contacts.items
+          this.set_item_count(this.Contacts?.totalItems)
+          this.Contacts = this.Contacts?.items
       },
       ChangeView()
       {

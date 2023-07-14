@@ -40,6 +40,6 @@ export default {
         {
             this.set_filter([NewSelection,OldSelection])
         }
-    }
+    },
 };
 </script>

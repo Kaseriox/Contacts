@@ -43,7 +43,7 @@ export default {
         },
         Login()
         {
-            this.$router.push('/Login')
+            this.$router.push('/login')
         },
         Logout()
         {
@@ -57,7 +57,7 @@ export default {
     },
     computed:{
         ...mapGetters({
-            user_data:'User/Data'
+            user_data:'User/Data',
         })
     }
 };

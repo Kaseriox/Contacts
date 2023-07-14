@@ -1,6 +1,5 @@
 <template>
   <div>
-
         <form class="bg-white flex flex-col h-1/2" @submit.prevent="HandleForm">
           <div class=" p-24 pt-14">
             <p class=" text-5xl pb-14">Admin prisijungimas:</p>
@@ -43,20 +42,29 @@ import Input from '../InputField/InputField.vue'
       },
       methods:{
         ...mapActions({
-          set_user_data:'User/set_data'
+          set_user_data:'User/set_data',
+          set_message:'Notification/set_data'
         }),
         async HandleForm()
         {
           const Login = await this.$Authenticate(this.Login)
-          if(Login)
+          if(Login.status === 400)
           {
-            this.$router.push('/')
-            this.set_user_data(Login)
+            this.set_message({message:'Email Or Password Is Incorrect',type:'error'})
+            return
           }
-          else
+          if(Login.status === 0)
           {
-            console.log('failed')
+            this.set_message({message:'Server Not Responding',type:'error'})
+            return
           }
+          if(Login.token !== undefined)
+          {
+                this.$router.push('/')
+                this.set_user_data(Login)
+                this.set_message({message:'Succesfully Logged In',type:'success'})
+          }
+
         },
         ChangeComponent()
         {

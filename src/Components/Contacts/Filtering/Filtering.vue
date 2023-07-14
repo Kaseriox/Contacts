@@ -12,7 +12,10 @@ export default {
     props:{
         Expand:{
             required:true,
-            default:[]
+            default()
+            {
+                return []
+            }
         }
     },
     data() {
@@ -21,8 +24,8 @@ export default {
                 company_id:{values:new Set(),Type:'Įmonė',Text:'Filtruoti įmones...',Belongs:'company_id.name'},
                 department_id:{values:new Set(),Type:'Padalinys',Text:'Filtruoti divizijas...',Belongs:'department_id.name'},
                 division_id:{values:new Set(),Type:'Skyrius',Text:'Filtruoti departamentus...',Belongs:'division_id.name'},
-                office_id:{values:new Set(),Type:'Grupė',Text:'Filtruoti grupes...',Belongs:'office_id.name'},
-                group_id:{values:new Set(),Type:'Ofisas',Text:'Filtruoti adresus...',Belongs:'group_id.name'},
+                group_id:{values:new Set(),Type:'Grupė',Text:'Filtruoti grupes...',Belongs:'group_id.name'},
+                office_id:{values:new Set(),Type:'Ofisas',Text:'Filtruoti adresus...',Belongs:'office_id.name'},
             },
             show:false
         };
@@ -51,6 +54,10 @@ export default {
         {
             this.Filter()
         }
+    },
+    destroyed()
+    {
+        this.$store.state.Paging.Filter = []
     }
 };
 </script>

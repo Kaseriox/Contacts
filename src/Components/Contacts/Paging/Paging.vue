@@ -6,7 +6,7 @@
                 <p class=" text-base">Previous Page</p>
             </div>
             </button>
-        <button :disabled="Page >= TotalPages" @click="set_page(1)" class=" w-2/12 pr-2 py-1 rounded-md flex justify-end items-center text-white text-base bg-blue-700 disabled:bg-slate-500">
+        <button :disabled="Page >= TotalPages || isNaN(TotalPages)" @click="set_page(1)" class=" w-2/12 pr-2 py-1 rounded-md flex justify-end items-center text-white text-base bg-blue-700 disabled:bg-slate-500">
             <div class="flex flex-row">
                 <p class=" text-base">Next Page</p>
                 <img class=" rotate-180" src="./../../../assets/svg/double_left.svg"/>

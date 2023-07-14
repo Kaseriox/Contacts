@@ -15,12 +15,22 @@ export default {
   components: {ModalWindow,Notification},
   methods:{
     ...mapActions({
-      set_user_data:'User/set_data'
+      set_user_data:'User/set_data',
+      set_message:'Notification/set_data',
+      set_status:'Status/set_status'
     }),
   },
   async created()
   {
-    this.set_user_data(await this.$CheckAuth())
+    if(await this.$GetStatus() !== null)
+    {
+      this.set_user_data(await this.$CheckAuth())
+      this.set_status('online')
+    }
+    else
+    {
+      this.set_message({message:'Server Not Responding',type:'error'})
+    }
   }
 };
 </script>

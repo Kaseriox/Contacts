@@ -16,7 +16,7 @@ let PocketBasePlugin = {
             }
             catch(err)
             {
-                return null
+                return err
             }
         },
         Vue.prototype.$GetCollection = async function({Collection,Page=1,ItemsPerPage=25,query})
@@ -111,6 +111,17 @@ let PocketBasePlugin = {
             try
             {
                return await pb.admins.requestPasswordReset(email)
+            }
+            catch(err)
+            {
+                return err
+            }
+        }
+        Vue.prototype.$GetStatus = async function()
+        {
+            try
+            {
+                return await pb.health.check()
             }
             catch(err)
             {
