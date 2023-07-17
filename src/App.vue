@@ -24,8 +24,9 @@ export default {
   {
     if(await this.$GetStatus() !== null)
     {
-      this.set_user_data(await this.$CheckAuth())
       this.set_status('online')
+      this.set_user_data(await this.$CheckAuth())
+      
     }
     else
     {

@@ -1,7 +1,7 @@
 <template>
     <nav class="bg-custom-blue">
         <div class=" grid grid-cols-7 place-items-center h-28 mx-8">
-            <div class="col-span-1">
+            <div class="col-span-1 w-full">
                 <router-link to="/"><img src="../../assets/svg/TELTONIKA-LOGO-WHITE.svg" /></router-link>
             </div>
             <div class="col-span-5 w-full">

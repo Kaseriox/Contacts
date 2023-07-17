@@ -37,7 +37,8 @@
   },
     computed:{
       ...mapGetters({
-        Component:'StructurePage/Component'
+        Component:'StructurePage/Component',
+        user_data:'User/Data'
       })
     },
     methods:{
@@ -49,13 +50,13 @@
         this.set_component(component)
       }
     },
-    created()
+    mounted()
     {
       if(this.Component === undefined)
       {
         this.set_component(GroupManage)
       }
-    }
+    },
   };
   </script>
   

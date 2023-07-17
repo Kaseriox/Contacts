@@ -61,7 +61,7 @@ import Input from '../InputField/InputField.vue'
           if(Login.token !== undefined)
           {
                 this.$router.push('/')
-                this.set_user_data(Login)
+                await this.set_user_data(Login)
                 this.set_message({message:'Succesfully Logged In',type:'success'})
           }
 
