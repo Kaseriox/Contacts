@@ -189,15 +189,16 @@ export default {
                 this.$refs.NameInput.error = 'Name Is Required'
                 valid = false
             }
-            if (!nameRegex.test(this.$refs.NameInput.value)) {
+            else if (!nameRegex.test(this.$refs.NameInput.value)) {
                 this.$refs.NameInput.error = 'Name Should Only Include Letters'
                 valid = false
             }
+
             if (!(this.$refs.SurnameInput.value.length > 0)) {
-                this.$refs.NameInput.error = 'Surname Is Required'
+                this.$refs.SurnameInput.error = 'Surname Is Required'
                 valid = false
             }
-            if (!nameRegex.test(this.$refs.SurnameInput.value)) {
+            else if (!nameRegex.test(this.$refs.SurnameInput.value)) {
                 this.$refs.SurnameInput.error = 'Surname Should Only Include Letters'
                 valid = false
             }
@@ -211,8 +212,7 @@ export default {
                 this.$refs.EmailInput.error = 'Email Is Required'
                 valid = false
             }
-
-            if (!emailRegex.test(this.$refs.EmailInput.value)) {
+            else if (!emailRegex.test(this.$refs.EmailInput.value)) {
                 this.$refs.EmailInput.error = 'Incorrect Email'
                 valid = false
             }

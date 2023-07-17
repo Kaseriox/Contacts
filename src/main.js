@@ -7,8 +7,10 @@ import Routes from './Router/routes'
 import PocketBasePlugin from './plugins/PocketBase';
 import Store from './Store/store'
 
+import PocketBase from 'pocketbase'
 import './styles.css'
 
+const pb = new PocketBase(API_URL)
 
 
 
@@ -21,7 +23,23 @@ const router = new VueRouter({
     routes:Routes,
     mode:'history'
 })
-
+router.beforeEach(async (to,from,next)=>{
+    if(to.meta?.reqAuth)
+    {
+        if(pb.authStore.isValid)
+        {
+            next()
+        }
+        else
+        {
+            next('/login')
+        }
+    }
+    else
+    {
+        next()
+    }
+})
 
 const store = new Vuex.Store(Store)
 

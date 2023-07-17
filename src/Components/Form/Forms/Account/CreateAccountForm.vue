@@ -100,7 +100,7 @@ export default {
 
             if(response!==null)
             {
-                this.set_message({message:'Succesfully Created Account',type:'success'})
+                this.set_message({message:`Succesfully Created An Account Password is :${this.Data.password}`,type:'success'})
                 this.refresh()
                 this.Close()
             }

@@ -7,6 +7,7 @@ let PocketBasePlugin = {
     install(Vue)
     {
         const pb = new PocketBase(API_URL)
+        pb.autoCancellation(false)
         Vue.prototype.$Authenticate = async function(Login)
         {
             try{
@@ -96,10 +97,16 @@ let PocketBasePlugin = {
         {
            try
            {
-                return  pb.collection('users').authRefresh(null,{
+                if(pb.authStore.isValid)
+                {
+                    return await  pb.collection('users').authRefresh(null,{
                     expand:'permissions_id'
-                })
-                
+                    })
+                }
+                else
+                {
+                    return false
+                }
            }
            catch(err)
            {
@@ -128,6 +135,7 @@ let PocketBasePlugin = {
                 return null
             }
         }
+
     }
 }
 

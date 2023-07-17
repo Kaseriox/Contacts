@@ -20,7 +20,7 @@ export default {
       set_status:'Status/set_status'
     }),
   },
-  async created()
+  async beforeCreate()
   {
     if(await this.$GetStatus() !== null)
     {

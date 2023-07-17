@@ -178,56 +178,63 @@ export default {
         {
             let valid = true
 
-            const nameRegex= /^[A-Za-z]+$/
-            const emailRegex= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            const nameRegex = /^[A-Za-z]+$/
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
             const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/
 
-            if(!nameRegex.test(this.$refs.NameInput.value) || !(this.$refs.NameInput.value.length > 2))
-            {
-                this.$refs.NameInput.error = 'Incorrect Name Input'
-                valid=false
+            if (!(this.$refs.NameInput.value.length > 0)) {
+                this.$refs.NameInput.error = 'Name Is Required'
+                valid = false
             }
-            if(!nameRegex.test(this.$refs.SurnameInput.value) || !(this.$refs.SurnameInput.value.length > 2))
-            {
-                this.$refs.SurnameInput.error = 'Incorrect Surname Input'
-                valid=false
+            else if (!nameRegex.test(this.$refs.NameInput.value)) {
+                this.$refs.NameInput.error = 'Name Should Only Include Letters'
+                valid = false
             }
-            if(!(this.$refs.PositionInput.value.length > 2))
-            {
-                this.$refs.PositionInput.error = 'Incorrect Position Input'
-                valid=false
+
+            if (!(this.$refs.SurnameInput.value.length > 0)) {
+                this.$refs.SurnameInput.error = 'Surname Is Required'
+                valid = false
             }
-            if(!emailRegex.test(this.$refs.EmailInput.value))
-            {
-                this.$refs.EmailInput.error = 'Incorrect Email Input'
-                valid=false
+            else if (!nameRegex.test(this.$refs.SurnameInput.value)) {
+                this.$refs.SurnameInput.error = 'Surname Should Only Include Letters'
+                valid = false
+            }
+
+            if (!(this.$refs.PositionInput.value.length > 0)) {
+                this.$refs.PositionInput.error = 'Position Name Is Required'
+                valid = false
+            }
+
+            if (!(this.$refs.EmailInput.value.length > 0)) {
+                this.$refs.EmailInput.error = 'Email Is Required'
+                valid = false
+            }
+            else if (!emailRegex.test(this.$refs.EmailInput.value)) {
+                this.$refs.EmailInput.error = 'Incorrect Email'
+                valid = false
             }
 
 
-            if(this.$refs.PhoneInput.value.length > 0 && !phoneRegex.test(this.$refs.PhoneInput.value))
-            {
+            if (this.$refs.PhoneInput.value.length > 0 && !phoneRegex.test(this.$refs.PhoneInput.value)) {
                 this.$refs.PhoneInput.error = 'Incorrect Phone Number Input'
-                valid=false
+                valid = false
             }
 
-            if(this.$refs.CompanySelect.value === '')
-            {
+            if (this.$refs.CompanySelect.value === '') {
                 this.$refs.CompanySelect.error = 'Please Select Company'
-                valid=false
-            }
-            
-            if(this.$refs.DivisionSelect?.value === '')
-            {
-                this.$refs.DivisionSelect.error = 'Please Select Division'
-                valid=false
+                valid = false
             }
 
-            if(this.$refs.OfficeSelect?.value === '')
-            {
-                this.$refs.OfficeSelect.error = 'Please Select Office'
-                valid=false
+            if (this.$refs.DivisionSelect?.value === '') {
+                this.$refs.DivisionSelect.error = 'Please Select Division'
+                valid = false
             }
-            
+
+            if (this.$refs.OfficeSelect?.value === '') {
+                this.$refs.OfficeSelect.error = 'Please Select Office'
+                valid = false
+            }
+
             return valid
         },
         ResetErrors()

@@ -11,9 +11,9 @@ export default [
     {path:'/',component:HomePage},
     {path:'/contact/:id',component:DetailedContacts},
     {path:'/login',component:AdminLogin},
-    {path:'/account',component:AccountManage},
-    {path:'/structure',component:StructureManage},
-    {path:'/company',component:CompanyManage},
+    {path:'/account',component:AccountManage, meta:{reqAuth:true}},
+    {path:'/structure',component:StructureManage, meta:{reqAuth:true}},
+    {path:'/company',component:CompanyManage, meta:{reqAuth:true}},
     {path: "*", component: PageNotFound},
     
 ]
