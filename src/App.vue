@@ -30,7 +30,7 @@ export default {
     }
     else
     {
-      this.set_message({message:'Server Not Responding',type:'error'})
+      this.set_message({message:'Serveris neatsako',type:'error'})
     }
   }
 };

@@ -49,22 +49,22 @@ export default {
            const response = await this.$CreateRecord({Collection:'companies',data:this.Data})
            if(response!==null)
            {
-                this.set_message({message:'Succesfully Created Company',type:'success'})
+                this.set_message({message:'Įmonė sėkmingai sukurta',type:'success'})
                 this.refresh()
                 this.Close()
            }
            else
            {
-                this.set_message({message:'Failed To Create Company',type:'error'})
+                this.set_message({message:'Nepavyko sukurti įmonės',type:'error'})
            }
 
         },
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.CompanyInput.value.length > 2))
+            if(!(this.$refs.CompanyInput.value.length > 0))
             {
-                this.$refs.CompanyInput.error = 'Incorrect Company Input'
+                this.$refs.CompanyInput.error = 'Įmonės pavadinimas yra reikalingas'
                 valid=false
             }
             

@@ -1,11 +1,11 @@
 <template >
-    <div v-if="Data!==false" class="space-y-4 text-base">
+    <div v-if="Data!==false && user_data?.name ==='Admin'" class="space-y-4 text-base">
        <div class="text-4xl">Sukurti admin paskyrą</div> 
        <div class="flex flex-row items-center space-x-8">
-            <FormButton v-if="user_data?.expand.permissions_id.edit_permissions" :type="'create'" :collection="'users'"/>
-            <div class="text-2xl">Susikurti naują admin paskyrą</div>
+            <FormButton v-if="user_data?.expand.permissions_id?.edit_permissions" :type="'create'" :collection="'users'"/>
+            <div class="text-2xl">Sukurti naują admin paskyrą</div>
        </div>
-       <ItemsFound :count="Data.length"/>
+       <ItemsFound :count="Data.length" :name="'paskyros'"/>
        <Table class="w-1/2" :data="SetData()" :fields="SetFields()" :permissions="SetPermissions()" />
     </div>
     <div v-else>
@@ -72,7 +72,7 @@ export default {
     },
     async created()
     {
-        this.GetData()
+       this.GetData()
     }
 };
 </script>

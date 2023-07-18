@@ -27,12 +27,9 @@
 </template>
 <script>
 import Input from '../../../InputField/InputField.vue'
-import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
-import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions, mapGetters } from 'vuex';
 export default {
-    components: {Input,Select,UploadPhoto,Checkbox
+    components: {Input
     },
     data() {
         return {
@@ -47,7 +44,8 @@ export default {
     methods:{
         ...mapActions({
             Close:'Modal/close',
-            set_message:'Notification/set_data'
+            set_message:'Notification/set_data',
+            set_user_data:'User/set_data',
         }),
         async HandleForm()
         { 
@@ -59,12 +57,18 @@ export default {
             let response = await this.$UpdateRecord({Collection:'users',id:this.user_data.id,data:this.Data})
             if(response!==null)
             {
-                this.set_message({message:'Succesfully Updated Password',type:'success'})
+                this.set_message({message:'Sėkmingai atnaujintas slaptažodis',type:'success'})
+                this.set_user_data(undefined)
+                if(this.$route.path !=='/')
+                {
+                    this.$router.push('/')
+                }
+                this.$Logout()
                 this.Close()
             }
             else
             {
-                this.set_message({message:'Failed To Update Password',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti slaptažodžio',type:'error'})
             }
             
 
@@ -76,7 +80,7 @@ export default {
             {
                 if(this.$refs[ref].value.length < 8)
                 {
-                    this.error = 'Password Has To Have More than 7 Characters'
+                    this.error = 'Slaptažodis turi būti nors iš 8 simbolių'
                     valid=false
                 }
             }

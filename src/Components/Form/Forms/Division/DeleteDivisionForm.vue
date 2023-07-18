@@ -1,12 +1,9 @@
 <template>
-    <div class="m-8">
-       <p class=" text-5xl mb-4">Ar tikrai norite ištrinti diviziją?</p>
+    <div class="m-8 overflow-hidden">
+       <p class=" text-5xl mb-4">Ar tikrai norite ištrinti padalinį?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <div class="flex flex-row">
-                        <p class="mr-1">Divizijos pavadinimas: </p>
-                        <p class="mr-1">{{ Data.name }}</p>
-                    </div>
+            <div class="text-xl whitespace-nowrap">
+                <div>Padalinio pavadinimas: {{ Data.name }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -44,12 +41,12 @@ methods:{
             const response = await this.$DeleteRecord({Collection:'divisions',id:this.id})
             if(response)
             {
-                this.set_message({message:'Succesfully Deleted Division',type:'success'})
+                this.set_message({message:'Sėkmingai panaikintas padalinys',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Delete Division',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti padalinio',type:'error'})
        }
    },
    async GetData()

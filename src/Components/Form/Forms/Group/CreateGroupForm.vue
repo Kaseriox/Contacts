@@ -17,9 +17,13 @@
                     <div class="p-6">
                         <div class="text-center text-2xl">Priklauso:</div>
                         <div class="space-y-4">
-                           <template v-for="department in Departments">
-                                <Checkbox v-model="choices" :value="department.id" :label="department.name"/>
-                           </template>
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
                         </div>
                     </div>
@@ -35,23 +39,23 @@
     </div>
 </template>
 <script>
+import vueTagsInput  from '@johmun/vue-tags-input';
 import Input from '../../../InputField/InputField.vue'
 import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
-import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions } from 'vuex';
 export default {
-    components: {Input,Select,UploadPhoto,Checkbox
+    components: {Input,Select,vueTagsInput
     },
     data() {
         return {
+            tag:'',
+            tags:[],
+            autocomplete:[],
             Ready:false,
             Data:{
                 name:'',
             },
             error:false,
-            choices:[],
-            Departments:'',
         };
     },
     methods:{
@@ -70,20 +74,20 @@ export default {
            let response = await this.$CreateRecord({Collection:'groups',data:this.Data})
            if(response === null)
            {
-                this.set_message({message:'Failed To Create Group',type:'error'})
+                this.set_message({message:'Nepavyko sukurti grupės',type:'error'})
                 return
            }
            const groupid = response.id
-            for(const choice of this.choices)
+            for(const choice of this.tags)
             {
-                response = await this.$CreateRecord({Collection:'departments_groups',data:{department_id:choice,group_id:groupid}})
+                response = await this.$CreateRecord({Collection:'departments_groups',data:{department_id:choice.id,group_id:groupid}})
                 if(response===null)
                 {
-                    this.set_message({message:'Failed To Create Group',type:'error'})
+                    this.set_message({message:'Nepavyko sukurti grupės',type:'error'})
                     return
                 }
             }
-            this.set_message({message:'Succesfully Created Group',type:'success'})
+            this.set_message({message:'Sėkmingai sukurta grupė',type:'success'})
             this.refresh()
             this.Close()
 
@@ -91,14 +95,15 @@ export default {
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.NameInput.value.length > 2))
+            if(!(this.$refs.NameInput.value.length > 0))
             {
-                this.$refs.NameInput.error = 'Incorrect Group Input'
+                this.$refs.NameInput.error = 'Grupės pavadinimas yra reikalingas'
                 valid=false
             }
-            if(this.choices.length < 1)
+            if(this.tags.length < 1)
             {
-                this.error = 'Select A Department'
+                this.error = 'Pasirinkite Skyrių'
+                valid=false
             }
             return valid
         },
@@ -111,9 +116,20 @@ export default {
             this.error=false
         },
     },
+    computed: {
+    filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
+  },
     async created()
     {
-        this.Departments = (await this.$GetCollection({Collection:'departments',ItemsPerPage:'All'})).items
+        const Departments = (await this.$GetCollection({Collection:'departments',ItemsPerPage:'All'})).items
+        for(const record of Departments)
+        {
+            this.autocomplete.push({text:record.name,id:record.id})
+        }
         this.Ready=true
     }   
 

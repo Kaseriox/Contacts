@@ -1,10 +1,10 @@
 <template>
-    <div class="m-8">
+    <div class="m-8 overflow-hidden">
        <p class=" text-4xl mb-4">Ar tikrai norite ištrinti kontaktą?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <p>Paskyros vardas: {{ Data.name }} </p>
-                    <p>Elektroninis paštas: {{ Data.email }}</p>
+            <div class="text-xl whitespace-nowrap">
+                    <div>Paskyros vardas: {{ Data.username }} </div>
+                    <div>Elektroninis paštas: {{ Data.email }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -44,12 +44,12 @@ methods:{
             response = await this.$DeleteRecord({Collection:'user_permissions',id:this.Data.permissions_id})
             if(response)
             {
-                this.set_message({message:'Succesfully Deleted Account',type:'success'})
+                this.set_message({message:'Sėkmingai panaikinta paskyra',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Delete Account',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti paskyros',type:'error'})
        }
    },
    async GetData()

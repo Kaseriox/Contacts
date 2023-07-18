@@ -27,9 +27,13 @@
                 <div class="p-6">
                     <div class="text-center text-2xl">Priklauso:</div>
                     <div class="space-y-4">
-                        <template v-for="company in Companies">
-                            <Checkbox v-model="choices" :value="company.id" :label="company.name" />
-                        </template>
+                        <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                         <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
                     </div>
                 </div>
@@ -46,17 +50,19 @@
     </div>
 </template>
 <script>
+import  vueTagsInput  from '@johmun/vue-tags-input';
 import Input from '../../../InputField/InputField.vue'
 import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
-import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
-        Input, Select, UploadPhoto, Checkbox
+        Input, Select,vueTagsInput   
     },
     data() {
         return {
+            tag:'',
+            tags:[],
+            autocomplete:[],
             Ready: false,
             Data: {
                 name: '',
@@ -66,8 +72,6 @@ export default {
                 country: '',
             },
             error: false,
-            choices: [],
-            Companies: '',
         };
     },
     methods: {
@@ -85,7 +89,7 @@ export default {
             response = await this.$UpdateRecord({ Collection: 'offices', data: this.Data, id: this.id })
             if(response === null)
             {
-                this.set_message({message:'Failed To Update Office',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti ofiso',type:'error'})
                 return
             }
             const officeid = response.id
@@ -99,58 +103,63 @@ export default {
                 company_ids.push({ id: item.id, company_id: item.company_id })
             }
             for (const company of company_ids) {
-                const found = this.choices.some((choice) => choice === company.company_id)
+                const found = this.tags.some((tag) => tag.id === company.company_id)
                 if (!found) {
-                    console.log('delete', company.id)
                     response = await this.$DeleteRecord({ Collection: 'companies_offices', id: company.id })
                     if(response === null)
                     {
-                        this.set_message({message:'Failed To Update Office',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti ofiso',type:'error'})
                         return
                     }
                 }
             }
-            for (const choice of this.choices) {
-                const found = company_ids.some((company) => company.company_id === choice)
+            for (const choice of this.tags) {
+                const found = company_ids.some((company) => company.company_id === choice.id)
                 if (!found) {
-                    console.log('add', choice)
-                    response = await this.$CreateRecord({ Collection: 'companies_offices', data: { company_id: choice, office_id: officeid } })
+                    response = await this.$CreateRecord({ Collection: 'companies_offices', data: { company_id: choice.id, office_id: officeid } })
                     if(response === null)
                     {
-                        this.set_message({message:'Failed To Update Office',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti ofiso',type:'error'})
                         return
                     }
                 }
             }
-            this.set_message({message:'Succesfully Updated Office',type:'success'})
+            this.set_message({message:'Sėkmingai atnaujintas ofisas',type:'success'})
             this.refresh()
             this.Close()
         },
         ValidateForm() {
             let valid = true
             const numberRegex = /^\d+$/
-            if (!(this.$refs.NameInput.value.length > 2)) {
-                this.$refs.NameInput.error = 'Incorrect Company Input'
-                valid = false
+            if(!(this.$refs.NameInput.value.length > 0))
+            {
+                this.$refs.NameInput.error = 'Ofiso pavadinimas yra reikalingas'
+                valid=false
             }
-            if (!(this.$refs.StreetInput.value.length > 2)) {
-                this.$refs.StreetInput.error = 'Incorrect Street Input'
-                valid = false
+            if(!(this.$refs.StreetInput.value.length > 0))
+            {
+                this.$refs.StreetInput.error = 'Ofiso gatvė yra reikalingas'
+                valid=false
             }
-            if (!(numberRegex.test(this.$refs.StreetNumberInput.value))) {
-                this.$refs.StreetNumberInput.error = "Incorrect Street Number Input "
-                valid = false
+            if(!(numberRegex.test(this.$refs.StreetNumberInput.value)))
+            {
+                this.$refs.StreetNumberInput.error = "Ofiso gatvės numeris yra reikalingas"
+                valid=false
             }
-            if (!(this.$refs.CityInput.value.length > 2)) {
-                this.$refs.CityInput.error = 'Incorrect Street Input'
-                valid = false
+            if(!(this.$refs.CityInput.value.length > 0))
+            {
+                this.$refs.CityInput.error = 'Ofiso miestas yra reikalingas'
+                valid=false
             }
-            if (!(this.$refs.CountryInput.value.length > 2)) {
-                this.$refs.CountryInput.error = 'Incorrect Street Input'
-                valid = false
+            if(!(this.$refs.CountryInput.value.length > 0))
+            {
+                this.$refs.CountryInput.error = 'Ofiso valstybė yra reikalinga'
+                valid=false
             }
-            if (this.choices.length < 1) {
-                this.error = 'Select An Company'
+            if(this.tags.length < 1)
+            {
+                this.error = 'Pasirinkite bent vieną įmonę'
+                valid=false
             }
             return valid
         },
@@ -164,18 +173,28 @@ export default {
     computed: {
         ...mapGetters({
             id: 'Form/id',
-        })
+        }),
+        filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
     },
     async created() {
-        this.Companies = (await this.$GetCollection({ Collection: 'companies', ItemsPerPage: 'All' })).items
+        const Companies = (await this.$GetCollection({Collection:'companies',ItemsPerPage:'All'})).items
+        for(const record of Companies)
+        {
+            this.autocomplete.push({text:record.name,id:record.id})
+        }
         this.Data = await this.$GetSingleRecord({ Collection: 'offices', id: this.id })
         let companies_offices = (await this.$GetCollection({
             Collection: 'companies_offices', ItemsPerPage: 'All', query: {
-                filter: `office_id="${this.id}"`
+                filter: `office_id="${this.id}"`,
+                expand:'company_id'
             }
         })).items
         for (const company_office of companies_offices) {
-            this.choices.push(company_office.company_id)
+            this.tags.push({text:company_office.expand.company_id.name,id:company_office.expand.company_id.id})
         }
         this.Ready = true
     }

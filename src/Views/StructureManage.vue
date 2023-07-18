@@ -54,7 +54,7 @@
     {
       if(this.Component === undefined)
       {
-        this.set_component(GroupManage)
+        this.set_component(DivisionManage)
       }
     },
   };

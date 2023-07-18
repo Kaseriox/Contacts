@@ -16,7 +16,7 @@
                     <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap" v-for="field in fields" :key="field">
                         {{ record[field] }}
                     </th>
-                    <th  scope="row" class="bg-custom-white border-b flex flex-row space-x-4">
+                    <th  scope="row" class="px-6 py-4 bg-custom-white flex flex-row space-x-4">
                         <FormButton v-if="permissions?.edit" :type="'edit'" :collection="record.collection" :id="record.id" />
                         <FormButton v-if="permissions?.delete" :type="'delete'" :collection="record.collection" :id="record.id"/>
                     </th>

@@ -58,6 +58,7 @@ export default {
     },
     data() {
         return {
+            timer:undefined
         };
     },
     methods:{
@@ -74,7 +75,20 @@ export default {
             type:'Notification/type',
             message:'Notification/message'
         })
-
+    },
+    watch:{
+        message(newvalue)
+        {
+            if(newvalue!== undefined)
+            {
+                clearTimeout(this.timer)
+                this.timer = setTimeout(()=>{this.close()}, 5000);
+            }
+        },
+        '$route.path'()
+        {
+            this.close()
+        }
     }
 };
 </script>

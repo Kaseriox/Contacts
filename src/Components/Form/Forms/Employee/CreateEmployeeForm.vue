@@ -169,72 +169,82 @@ export default {
             }
             const response = await this.$CreateRecord({ Collection: 'employees', data: this.Data })
             if (response !== null) {
-                this.set_message({ message: 'Succesfully Created Employee', type: 'success' })
+                this.set_message({ message: 'Sėkmingai sukurtas kontaktas', type: 'success' })
                 this.refresh()
                 this.Close()
             }
             else {
-                this.set_message({ message: 'Failed To Create Employee', type: 'error' })
+                this.set_message({ message: 'Nepavyko sukurti kontakto', type: 'error' })
             }
 
         },
         ValidateForm() {
             let valid = true
 
-            const nameRegex = /^[A-Za-z]+$/
+            const nameRegex = /^[\p{L}]+$/u
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/
+            const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,12}$/
 
-            if (!(this.$refs.NameInput.value.length > 0)) {
-                this.$refs.NameInput.error = 'Name Is Required'
+            if(/\s/g.test(this.$refs.NameInput.value))
+            {
+                this.$refs.NameInput.error = 'Vardas negali turėti tarpų'
+                valid=false
+            }
+            else if (!(this.$refs.NameInput.value.length > 0)) {
+                this.$refs.NameInput.error = 'Vardas yra reikalingas'
                 valid = false
             }
             else if (!nameRegex.test(this.$refs.NameInput.value)) {
-                this.$refs.NameInput.error = 'Name Should Only Include Letters'
+                this.$refs.NameInput.error = 'Vardas turi būti tik iš raidžių'
                 valid = false
             }
 
-            if (!(this.$refs.SurnameInput.value.length > 0)) {
-                this.$refs.SurnameInput.error = 'Surname Is Required'
+            if(/\s/g.test(this.$refs.SurnameInput.value))
+            {
+                this.$refs.SurnameInput.error = 'Pavardė negali turėti tarpų'
+                valid=false
+            }
+            else if (!(this.$refs.SurnameInput.value.length > 0)) {
+                this.$refs.SurnameInput.error = 'Pavardė yra reikalinga'
                 valid = false
             }
             else if (!nameRegex.test(this.$refs.SurnameInput.value)) {
-                this.$refs.SurnameInput.error = 'Surname Should Only Include Letters'
+                this.$refs.SurnameInput.error = 'Pavardė turi būti tik iš raidžių'
                 valid = false
             }
 
             if (!(this.$refs.PositionInput.value.length > 0)) {
-                this.$refs.PositionInput.error = 'Position Name Is Required'
+                this.$refs.PositionInput.error = 'Pozicijos pavadinimas yra reikalingas'
                 valid = false
             }
 
             if (!(this.$refs.EmailInput.value.length > 0)) {
-                this.$refs.EmailInput.error = 'Email Is Required'
+                this.$refs.EmailInput.error = 'Elektroninis paštas yra reikalingas'
                 valid = false
             }
             else if (!emailRegex.test(this.$refs.EmailInput.value)) {
-                this.$refs.EmailInput.error = 'Incorrect Email'
+                this.$refs.EmailInput.error = 'Neteisingas elektroninis paštas'
                 valid = false
             }
 
-
-            if (this.$refs.PhoneInput.value.length > 0 && !phoneRegex.test(this.$refs.PhoneInput.value)) {
-                this.$refs.PhoneInput.error = 'Incorrect Phone Number Input'
+            if (this.$refs.PhoneInput.value.length > 0 && !phoneRegex.test(this.$refs.PhoneInput.value)) 
+            {
+                this.$refs.PhoneInput.error = 'Neteisingas telefono numeris'
                 valid = false
             }
 
             if (this.$refs.CompanySelect.value === '') {
-                this.$refs.CompanySelect.error = 'Please Select Company'
+                this.$refs.CompanySelect.error = 'Prašau pasirinkti įmonę'
                 valid = false
             }
 
             if (this.$refs.DivisionSelect?.value === '') {
-                this.$refs.DivisionSelect.error = 'Please Select Division'
+                this.$refs.DivisionSelect.error = 'Prašau pasirinkti padalinį'
                 valid = false
             }
 
             if (this.$refs.OfficeSelect?.value === '') {
-                this.$refs.OfficeSelect.error = 'Please Select Office'
+                this.$refs.OfficeSelect.error = 'Prašau pasirinkti ofisą'
                 valid = false
             }
 
@@ -248,7 +258,7 @@ export default {
     },
     watch: {
         'Data.company_id'(newvalue,oldvalue) {
-            if(newvalue ==='' && oldvalue!=='')
+            if(oldvalue !== '')
             {
             this.Data.department_id=''
             this.Data.division_id=''
@@ -258,7 +268,7 @@ export default {
             this.GetOffices()
         },
         'Data.office_id'(newvalue,oldvalue) {
-            if(newvalue ==='' && oldvalue!=='')
+            if(oldvalue !== '')
             {
             this.Data.department_id=''
             this.Data.division_id=''
@@ -267,7 +277,7 @@ export default {
             this.GetDivisions()
         },
         'Data.division_id'(newvalue,oldvalue) {
-            if(newvalue ==='' && oldvalue!=='')
+            if(oldvalue !== '')
             {
             this.Data.department_id=''
             this.Data.group_id=''
@@ -276,7 +286,7 @@ export default {
             
         },
         'Data.department_id'(newvalue,oldvalue) {
-            if(newvalue ==='' && oldvalue!=='')
+            if(oldvalue !== '')
             {
             this.Data.group_id=''
             }

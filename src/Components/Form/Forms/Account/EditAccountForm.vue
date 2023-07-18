@@ -18,17 +18,13 @@
                     <div class="p-6">
                         <div class="mb-6 text-center text-2xl">Administracinės teisės:</div>
                         <div class="space-y-4">
-                           <CheckBox v-model="permissions.edit_employees" :open="user_data.expand.permissions_id.edit_permissions" :label="'Redaguoti ir kurti kontaktus'" :id="false"/>
-                           <CheckBox v-model="permissions.delete_employees" :open="user_data.expand.permissions_id.edit_permissions" :label="'Trinti kontaktus'" :id="false"/>
-                           <CheckBox v-model="permissions.edit_companies" :open="user_data.expand.permissions_id.edit_permissions" :label="'Redaguoti ir kurti įmones'" :id="false"/>
-                           <CheckBox v-model="permissions.delete_companies" :open="user_data.expand.permissions_id.edit_permissions" :label="'Trinti įmones'" :id="false"/>
-                           <CheckBox v-model="permissions.edit_offices" :open="user_data.expand.permissions_id.edit_permissions" :label="'Redaguoti ir kurti ofisus'" :id="false"/>
-                           <CheckBox v-model="permissions.delete_offices" :open="user_data.expand.permissions_id.edit_permissions" :label="'Trinti ofisus'" :id="false"/>
-                           <CheckBox v-model="permissions.edit_structure" :open="user_data.expand.permissions_id.edit_permissions" :label="'Redaguoti ir kurti struktūras'" :id="false"/>
-                           <CheckBox v-model="permissions.delete_structure" :open="user_data.expand.permissions_id.edit_permissions" :label="'Trinti struktūras'" :id="false"/>
-                           <CheckBox v-model="permissions.read_permissions" :open="user_data.expand.permissions_id.edit_permissions" :label="'Skaityti admin paskyras'" :id="false"/>
-                           <CheckBox v-model="permissions.edit_permissions" :open="user_data.expand.permissions_id.edit_permissions" :label="'Redaguoti ir kurti administracines teises'" :id="false"/>
-                           <CheckBox v-model="permissions.delete_permissions" :open="user_data.expand.permissions_id.edit_permissions" :label="'Trinti admin paskyras'"/>
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                         </div>
                     </div>
 
@@ -46,15 +42,52 @@
     </div>
 </template>
 <script>
+import VueTagsInput from "@johmun/vue-tags-input";
 import Input from '../../../InputField/InputField.vue'
-import CheckBox from '../../../InputField/CheckboxField.vue';
 import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions,mapGetters } from 'vuex';
 export default {
-    components: {Input,CheckBox,UploadPhoto
+    components: {Input,UploadPhoto,VueTagsInput
     },
     data() {
         return {
+        tag: "",
+      tags: [],
+      autocomplete: [
+        {
+          text: "edit_employees",
+        },
+        {
+          text: "delete_employees",
+        },
+        {
+          text: "edit_offices",
+        },
+        {
+          text: "delete_offices",
+        },
+        {
+          text: "edit_structure",
+        },
+        {
+          text: "delete_structure",
+        },
+        {
+          text: "edit_permissions",
+        },
+        {
+          text: "delete_permissions",
+        },
+        {
+          text: "delete_companies",
+        },
+        {
+            text:"edit_companies"
+        },
+        {
+            text:"read_permissions"
+        }
+        ],
             Ready:false,
             Data:{
                username:'',
@@ -71,12 +104,13 @@ export default {
                     delete_offices:false,
                     edit_structure:false,
                     delete_structure:false,
-                    read_permissions:false,
                     edit_permissions:false,
                     delete_permissions:false,
                     edit_companies:false,
                     delete_companies:false,
-               }
+                    read_permissions:false,
+               },
+            permission_id:''
         };
     },
     methods:{
@@ -92,40 +126,55 @@ export default {
             {
                return 
             }
-            let response = await this.$UpdateRecord({Collection:'user_permissions',id:this.permissions.id,data:this.permissions})
+            for(const object of Object.keys(this.permissions))
+            {
+                this.permissions[object] = false
+            }
+            for(const object in this.tags)
+            {
+                this.permissions[this.tags[object].text] = true
+            }
+            let response = await this.$UpdateRecord({Collection:'user_permissions',id:this.permission_id,data:this.permissions})
             if(response===null)
             {
-                this.set_message({message:'Failed To Update Account',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti paskyros',type:'error'})
                 return
             }
             response = await this.$UpdateRecord({Collection:'users',id:this.Data.id,data:this.Data})
             if(response!==null)
             {
-                this.set_message({message:'Succesfully Edited Account',type:'success'})
+                this.set_message({message:'Pavyko atnaujinti paskyrą',type:'success'})
                 this.refresh()
                 this.Close()
             }
             else
             {
-                this.set_message({message:'Failed To Update Account',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti paskyros',type:'error'})
             }
 
         },
         ValidateForm()
         {
             let valid = true
-
-            const nameRegex= /^[A-Za-z]+$/
             const emailRegex= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-            if(!nameRegex.test(this.$refs.NameInput.value) || !(this.$refs.NameInput.value.length > 2))
+            if(/\s/g.test(this.$refs.NameInput.value))
             {
-                this.$refs.NameInput.error = 'Incorrect Name Input'
+                this.$refs.NameInput.error = 'Vardas negali turėti tarpų'
                 valid=false
             }
-            if(!emailRegex.test(this.$refs.EmailInput.value))
+            else if(!(this.$refs.NameInput.value.length > 0))
             {
-                this.$refs.EmailInput.error = 'Incorrect Email Input'
+                this.$refs.NameInput.error = 'Vardas yra reikalingas'
+                valid=false
+            }
+            if(!(this.$refs.EmailInput.value.length > 0))
+            {
+                this.$refs.EmailInput.error = 'Elektroninio pašto laukas yra būtinas'
+                valid=false
+            }
+            else if(!emailRegex.test(this.$refs.EmailInput.value))
+            {
+                this.$refs.EmailInput.error = 'Neteisingas elektroninis paštas'
                 valid=false
             }
             
@@ -143,12 +192,31 @@ export default {
         ...mapGetters({
             id:'Form/id',
             user_data:'User/Data'
-        })
+        }),
+    filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
     },
     async created()
     {
         this.Data = await this.$GetSingleRecord({Collection:'users',id:this.id})
         this.permissions = await this.$GetSingleRecord({Collection:'user_permissions',id:this.Data.permissions_id})
+        this.permission_id = this.permissions.id
+        delete this.permissions.expand
+        delete this.permissions.collectionId
+        delete this.permissions.collectionName
+        delete this.permissions.created
+        delete this.permissions.id
+        delete this.permissions.updated
+        for(const permission of Object.keys(this.permissions))
+        {
+            if(this.permissions[permission]===true)
+            {
+                this.tags.push({text:permission})
+            }
+        }
         this.Ready=true
     }
 

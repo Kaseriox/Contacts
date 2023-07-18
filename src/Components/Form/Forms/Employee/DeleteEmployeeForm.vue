@@ -1,17 +1,10 @@
 <template>
-    <div class="m-8">
+    <div class="m-8 overflow-hidden">
        <p class=" text-5xl mb-4">Ar tikrai norite ištrinti kontaktą?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <div class="flex flex-row">
-                        <p class="mr-1">Vardas ir pavardė: </p>
-                        <p class="mr-1">{{ Data.name }}</p>
-                        <p>{{ Data.surname }}</p>
-                    </div>
-                    <div class="flex flex-row">
-                        <p class="mr-1">Pozicija:</p>
-                        <p>{{ Data.position }}</p>
-                    </div>
+            <div class="text-xl whitespace-nowrap">
+                    <div>Vardas ir pavardė: {{ Data.name }} {{ Data.surname }}</div>
+                    <div>Pozicija: {{ Data.position }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -49,12 +42,12 @@ methods:{
             const response = await this.$DeleteRecord({Collection:'employees',id:this.id})
             if(response)
             {
-                this.set_message({message:'Succesfully Deleted Employee',type:'success'})
+                this.set_message({message:'Sėkmingai panaikintas kontaktas',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Delete Employee',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti kontakto',type:'error'})
        }
    },
    async GetData()

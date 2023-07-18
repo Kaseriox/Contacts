@@ -17,9 +17,13 @@
                     <div class="p-6">
                         <div class="text-center text-2xl">Priklauso:</div>
                         <div class="space-y-4">
-                           <template v-for="department in Departments">
-                                <Checkbox v-model="choices" :value="department.id" :label="department.name"/>
-                           </template>
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
                         </div>
                     </div>
@@ -35,24 +39,24 @@
     </div>
 </template>
 <script>
+import vueTagsInput  from '@johmun/vue-tags-input';
 import Input from '../../../InputField/InputField.vue'
 import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
-import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
-        Input, Select, UploadPhoto, Checkbox
+        Input, Select,vueTagsInput
     },
     data() {
         return {
+            tag:'',
+            tags:[],
+            autocomplete:[],
             Ready:false,
             Data:{
                 name:'',
             },
             error:false,
-            choices:[],
-            Departments:'',
         };
     },
     methods: {
@@ -70,7 +74,7 @@ export default {
             response = await this.$UpdateRecord({ Collection: 'groups', data: this.Data, id: this.id })
             if(response===null)
             {
-                this.set_message({message:'Failed To Update Group',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti grupės',type:'error'})
                 return
             }
             const groupid = response.id
@@ -84,44 +88,43 @@ export default {
                 department_ids.push({ id: item.id, department_id: item.department_id })
             }
             for (const deparment of department_ids) {
-                const found = this.choices.some((choice) => choice === deparment.department_id)
+                const found = this.tags.some((tag) => tag.id === deparment.department_id)
                 if (!found) {
-                    console.log('delete', deparment.id)
                     response = await this.$DeleteRecord({ Collection: 'departments_groups', id: deparment.id })
                     if(response===null)
                     {
-                        this.set_message({message:'Failed To Update Group',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti grupės',type:'error'})
                         return
                     }
                 }
             }
-            for (const choice of this.choices) {
-                const found = department_ids.some((deparment) => deparment.department_id === choice)
+            for (const choice of this.tags) {
+                const found = department_ids.some((deparment) => deparment.department_id === choice.id)
                 if (!found) {
-                    console.log('add', choice)
-                    response = await this.$CreateRecord({ Collection: 'departments_groups', data: { department_id: choice, group_id: groupid } })
+                    response = await this.$CreateRecord({ Collection: 'departments_groups', data: { department_id: choice.id, group_id: groupid } })
                     if(response===null)
                     {
-                        this.set_message({message:'Failed To Update Group',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti grupės',type:'error'})
                         return
                     }
                 }
             }
-            this.set_message({message:'Succesfully Updated Group',type:'success'})
+            this.set_message({message:'Sėkmingai atnaujinta grupė',type:'success'})
             this.refresh()
             this.Close()
         },
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.NameInput.value.length > 2))
+            if(!(this.$refs.NameInput.value.length > 0))
             {
-                this.$refs.NameInput.error = 'Incorrect Company Input'
+                this.$refs.NameInput.error = 'Grupės pavadinimas yra reikalingas'
                 valid=false
             }
-            if(this.choices.length < 1)
+            if(this.tags.length < 1)
             {
-                this.error = 'Select An Office'
+                this.error = 'Pasirinkite Skyrių'
+                valid=false
             }
             return valid
         },
@@ -137,18 +140,28 @@ export default {
     computed: {
         ...mapGetters({
             id: 'Form/id',
-        })
+        }),
+        filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
     },
     async created() {
-        this.Departments = (await this.$GetCollection({ Collection: 'departments', ItemsPerPage: 'All' })).items
+        const Departments = (await this.$GetCollection({Collection:'departments',ItemsPerPage:'All'})).items
+        for(const record of Departments)
+        {
+            this.autocomplete.push({text:record.name,id:record.id})
+        }
         this.Data = await this.$GetSingleRecord({ Collection: 'groups', id: this.id })
         let departments_groups = (await this.$GetCollection({
             Collection: 'departments_groups', ItemsPerPage: 'All', query: {
-                filter: `group_id="${this.id}"`
+                filter: `group_id="${this.id}"`,
+                expand:'department_id'
             }
         })).items
         for (const departments_group of departments_groups) {
-            this.choices.push(departments_group.department_id)
+            this.tags.push({text:departments_group.expand.department_id.name,id:departments_group.expand.department_id.id})
         }
         this.Ready = true
     }

@@ -1,11 +1,9 @@
 <template>
-    <div class="m-8">
+    <div class="m-8 overflow-hidden">
        <p class=" text-4xl mb-4">Ar tikrai norite ištrinti įmonę?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <div class="flex flex-row">
-                        <p>Įmonės pavadinimas: {{ Data.name }}</p>
-                    </div>
+            <div class="text-xl whitespace-nowrap">
+                <div>Įmonės pavadinimas: {{ Data.name }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -43,12 +41,12 @@ methods:{
             const response = await this.$DeleteRecord({Collection:'companies',id:this.id})
             if(response!==null)
             {
-                this.set_message({message:'Succesfully Deleted Company',type:'success'})
+                this.set_message({message:'Sėkmingai panaikinta įmonė',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Delete Company',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti įmonės',type:'error'})
        }
    },
 },

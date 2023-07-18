@@ -40,10 +40,12 @@ export default {
         {
             this.set_component(ResetPassword)
             this.open()
+            this.Active = false
         },
         Login()
         {
             this.$router.push('/login')
+            this.Active = false
         },
         Logout()
         {
@@ -53,12 +55,17 @@ export default {
                 this.$router.push('/')
             }
             this.$Logout()
+            this.Active = false
         },
     },
     computed:{
         ...mapGetters({
             user_data:'User/Data',
         })
+    },
+    beforeDestroy()
+    {
+        this.Active = false
     }
 };
 </script>

@@ -5,18 +5,18 @@
     <div class="flex flex-row items-center mb-2">
         <Search class="w-1/4"/>
         <ViewChange v-on:ChangeView="ChangeView"/>
-        <FormButton v-if="user_data?.expand.permissions_id.edit_employees" :type="'create'" :collection="'employees'"/>
+        <FormButton v-if="user_data?.expand.permissions_id?.edit_employees" :type="'create'" :collection="'employees'"/>
     </div>
 
-    <ItemsFound :count="ItemCount"/>
+    <ItemsFound :count="ItemCount" :name="'kontaktai'"/>
     <ContactsPerPage/>
-    <Filtering :Expand="Contacts" class="mb-2"/>
+    <Filtering :Expand="Contacts" class="mb-4"/>
 
     <div class="mb-2" v-if="Contacts">
          <component :is="ViewComponent" :data="SetData()" :fields="SetFields()" :permissions="SetPermissions()" />
     </div>
 
-    <Paging class=" h-12"/>
+    <Paging v-if="ItemsPerPage!=='All'" class=" h-12"/>
 
   </div>
 
@@ -98,8 +98,8 @@
       SetPermissions()
       {
         let obj = {
-            edit:this.user_data?.expand.permissions_id.edit_employees,
-            delete:this.user_data?.expand.permissions_id.delete_employees
+            edit:this.user_data?.expand.permissions_id?.edit_employees,
+            delete:this.user_data?.expand.permissions_id?.delete_employees
         }
         return obj
       },

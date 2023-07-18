@@ -4,18 +4,18 @@
                 <iconify-icon v-if="!Data.photo" icon="gg:profile" width="48"/>
                 <img v-else  class=" w-12"  :src="`http://127.0.0.1:8090/api/files/${Data.collectionId}/${Data.id}/${Data.photo}?thumb=48x48`" />
                 <div class="flex flex-col ml-3">
-                    <router-link :to="`/Contact/` + Data.id"><div class="text-xl font-bold text-custom-lightblue">{{Data["Vardas ir pavardė"]}}</div></router-link>
-                    <div>Pozicija: {{ Data["Pozicija"] }}</div>
+                    <router-link :to="`/Contact/` + Data.id"><div class=" whitespace-nowrap text-xl font-bold text-custom-lightblue">{{Data["Vardas ir pavardė"]}}</div></router-link>
+                    <div class=" whitespace-nowrap">Pozicija: {{ Data["Pozicija"] }}</div>
                 </div>
             </div>
             <div class="mb-2">
-                <div>Telefono nr: {{ Data["Telefono numeris"] }}</div>
-                <div>El. paštas: {{Data["Elektroninis paštas"]}}</div>
-                <div>Adresas: {{ Data["Adresas"] }}</div>
+                <div class=" whitespace-nowrap">Telefono nr: {{ Data["Telefono numeris"] }}</div>
+                <div class=" whitespace-nowrap"> El. paštas: {{Data["Elektroninis paštas"]}}</div>
+                <div class=" whitespace-nowrap">Adresas: {{ Data["Adresas"] }}</div>
             </div>    
-            <div v-if="user_data?.expand.permissions_id.delete_employees || user_data?.expand.permissions_id.edit_employees" class="flex flex-row mt-4 space-x-4">
-                <FormButton v-if="user_data?.expand.permissions_id.edit_employees" :id="Data.id" :type="'edit'" :collection="Data.collection" />
-                <FormButton v-if="user_data?.expand.permissions_id.delete_employees" :id="Data.id" :type="'delete'" :collection="Data.collection"/>
+            <div v-if="user_data?.expand.permissions_id?.delete_employees || user_data?.expand.permissions_id?.edit_employees" class="flex flex-row mt-4 space-x-4">
+                <FormButton v-if="user_data?.expand.permissions_id?.edit_employees" :id="Data.id" :type="'edit'" :collection="Data.collection" />
+                <FormButton v-if="user_data?.expand.permissions_id?.delete_employees" :id="Data.id" :type="'delete'" :collection="Data.collection"/>
             </div>
     </div>
 </template>

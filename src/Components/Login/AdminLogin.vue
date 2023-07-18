@@ -50,19 +50,19 @@ import Input from '../InputField/InputField.vue'
           const Login = await this.$Authenticate(this.Login)
           if(Login.status === 400)
           {
-            this.set_message({message:'Email Or Password Is Incorrect',type:'error'})
+            this.set_message({message:'Elektroninis paštas arba slaptažodis neteisingas',type:'error'})
             return
           }
           if(Login.status === 0)
           {
-            this.set_message({message:'Server Not Responding',type:'error'})
+            this.set_message({message:'Serveris neatsako',type:'error'})
             return
           }
           if(Login.token !== undefined)
           {
                 this.$router.push('/')
                 await this.set_user_data(Login)
-                this.set_message({message:'Succesfully Logged In',type:'success'})
+                this.set_message({message:'Sėkmingai prisijungta',type:'success'})
           }
 
         },

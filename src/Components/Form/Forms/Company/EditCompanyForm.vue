@@ -49,23 +49,23 @@ export default {
            const response = await this.$UpdateRecord({Collection:'companies',data:this.Data,id:this.id})
            if(response!==null)
            {
-                this.set_message({message:'Succesfully Updated Company',type:'success'})
+                this.set_message({message:'Sėkmingai atnaujinta įmonė',type:'success'})
                 this.refresh()
                 this.Close()
                 return
            }
            else
            {
-                this.set_message({message:'Failed To Update Company',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti įmonės',type:'error'})
            }
 
         },
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.CompanyInput.value.length > 2))
+            if(!(this.$refs.CompanyInput.value.length > 0))
             {
-                this.$refs.CompanyInput.error = 'Incorrect Company Input'
+                this.$refs.CompanyInput.error = 'Įmonės pavadinimas yra reikalingas'
                 valid=false
             }
             

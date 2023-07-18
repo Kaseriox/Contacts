@@ -43,17 +43,17 @@
           const Reset = await this.$PasswordReset(this.Email)
           if(Reset.status === 400)
           {
-            this.set_message({message:'Incorrect Email',type:'error'})
+            this.set_message({message:'Blogas Elektroninis paštas',type:'error'})
             return
           }
           if(Reset.status === 0)
           {
-            this.set_message({message:'Server Not Responding',type:'error'})
+            this.set_message({message:'Serveris neatsako',type:'error'})
             return
           }
           if(Reset.token !== undefined)
           {
-              this.set_message({message:'Password Change Requested',type:'success'})
+              this.set_message({message:'Slaptažodžio pakeitimas žinutė sėkmingai išsiųsta',type:'success'})
           }
         },
         Back()

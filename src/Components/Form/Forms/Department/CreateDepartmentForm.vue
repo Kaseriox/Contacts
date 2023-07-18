@@ -8,7 +8,7 @@
             <div class=" grid grid-cols-2 gap-x-32 m-12 mx-24 text-base ">   
 
                     <div class="p-6">
-                        <div class=" text-center text-2xl">Sukurti departamentą:</div>
+                        <div class=" text-center text-2xl">Sukurti skyrių:</div>
                         <div class="space-y-4">
                            <Input ref="NameInput" v-model="Data.name" :label="'Pavadinimas:'" :placeholder="'Įveskite pavadinimą...'"/>   
                         </div>
@@ -17,9 +17,13 @@
                     <div class="p-6">
                         <div class="text-center text-2xl">Priklauso:</div>
                         <div class="space-y-4">
-                           <template v-for="division in Divisions">
-                                <Checkbox v-model="choices" :value="division.id" :label="division.name"/>
-                           </template>
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
                         </div>
                     </div>
@@ -35,23 +39,24 @@
     </div>
 </template>
 <script>
+import VueTagsInput from "@johmun/vue-tags-input";
 import Input from '../../../InputField/InputField.vue'
 import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
 import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions } from 'vuex';
 export default {
-    components: {Input,Select,UploadPhoto,Checkbox
+    components: {Input,Select,UploadPhoto,VueTagsInput
     },
     data() {
         return {
+            tag:'',
+            tags:[],
+            autocomplete:[],
             Ready:false,
             Data:{
                 name:'',
             },
             error:false,
-            choices:[],
-            Divisions:'',
         };
     },
     methods:{
@@ -70,34 +75,35 @@ export default {
            let response = await this.$CreateRecord({Collection:'departments',data:this.Data})
            if(response === null)
            {
-                this.set_message({message:'Failed To Update Department',type:'error'})
+                this.set_message({message:'Nepavyko sukurti skyriaus',type:'error'})
                 return
            }
            const departmentid = response.id
-            for(const choice of this.choices)
+            for(const choice of this.tags)
             {
-                response = await this.$CreateRecord({Collection:'divisions_departments',data:{division_id:choice,department_id:departmentid}})
+                response = await this.$CreateRecord({Collection:'divisions_departments',data:{division_id:choice.id,department_id:departmentid}})
                 if(response===null)
                 {
-                    this.set_message({message:'Failed To Update Department',type:'error'})
+                    this.set_message({message:'Nepavyko sukurti skyriaus',type:'error'})
                     return
                 }
             }
-            this.set_message({message:'Succesfully Created Department',type:'success'})
+            this.set_message({message:'Sėkmingai sukurtas skyrius',type:'success'})
             this.refresh()
             this.Close()
         },
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.NameInput.value.length > 2))
+            if(!(this.$refs.NameInput.value.length > 0))
             {
-                this.$refs.NameInput.error = 'Incorrect Department Input'
+                this.$refs.NameInput.error = 'Skyriaus pavadimas reikalingas'
                 valid=false
             }
-            if(this.choices.length < 1)
+            if(this.tags.length < 1)
             {
-                this.error = 'Select a Division'
+                this.error = 'Pasirinkite bent vieną padalinį'
+                valid=false
             }
             return valid
         },
@@ -110,9 +116,20 @@ export default {
             this.error=false
         },
     },
+    computed: {
+    filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
+  },
     async created()
     {
-        this.Divisions = (await this.$GetCollection({Collection:'divisions',ItemsPerPage:'All'})).items
+        const Divisions = (await this.$GetCollection({Collection:'divisions',ItemsPerPage:'All'})).items
+        for(const record of Divisions)
+        {
+            this.autocomplete.push({text:record.name,id:record.id})
+        }
         this.Ready=true
     }   
 

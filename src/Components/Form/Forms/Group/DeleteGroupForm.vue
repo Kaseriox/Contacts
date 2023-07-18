@@ -1,12 +1,9 @@
 <template>
-    <div class="m-8">
+    <div class="m-8 overflow-hidden">
        <p class=" text-5xl mb-4">Ar tikrai norite ištrinti grupę?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <div class="flex flex-row">
-                        <p class="mr-1">Grupės pavadinimas: </p>
-                        <p class="mr-1">{{ Data.name }}</p>
-                    </div>
+            <div class="text-xl whitespace-nowrap">
+                <div>Grupės pavadinimas: {{ Data.name }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -44,12 +41,12 @@ methods:{
             const response = await this.$DeleteRecord({Collection:'groups',id:this.id})
             if(response !== null)
             {
-                this.set_message({message:'Succesfully Deleted Group',type:'success'})
+                this.set_message({message:'Sėkmingai panaikinta grupė',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Delete Group',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti grupės',type:'error'})
        }
    },
    async GetData()

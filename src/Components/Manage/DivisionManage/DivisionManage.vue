@@ -1,11 +1,11 @@
 <template >
     <div v-if="Data!==false" class="space-y-4 text-base">
-       <div class="text-4xl">Divizijos</div> 
-       <div v-if="user_data?.expand.permissions_id.edit_structure" class="flex flex-row items-center space-x-8">
+       <div class="text-4xl">Padaliniai</div> 
+       <div v-if="user_data?.expand.permissions_id?.edit_structure" class="flex flex-row items-center space-x-8">
             <FormButton :type="'create'" :collection="'divisions'"/>
-            <div class="text-2xl">Pridėkite naują diviziją</div>
+            <div class="text-2xl">Pridėkite naują padalinį</div>
        </div>
-       <ItemsFound :count="Data.length"/>
+       <ItemsFound :count="Data.length" :name="'padaliniai'"/>
        <Table class="w-1/2" :data="SetData()"  :fields="SetFields()" :permissions="SetPermissions()"/>
     </div>
 </template>
@@ -48,8 +48,8 @@ export default {
     SetPermissions()
     {
         let obj = {
-            edit:this.user_data?.expand.permissions_id.edit_structure,
-            delete:this.user_data?.expand.permissions_id.delete_structure
+            edit:this.user_data?.expand.permissions_id?.edit_structure,
+            delete:this.user_data?.expand.permissions_id?.delete_structure
         }
         return obj
     },

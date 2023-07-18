@@ -18,11 +18,11 @@
                 </div>
                 <div class=" space-y-6 text-2xl">
                     <p class="text-3xl border-b-2">Kompanijos detalės:</p>
-                    <p>Kompanija: {{ Data.expand.company_id ? Data.expand.company_id.name : "No Company"  }}</p>
-                    <p>Būstinė: {{ Data.expand.office_id ? Data.expand.office_id.name : "No Office" }}</p>
-                    <p>Departamentas: {{ Data.expand.department_id ? Data.expand.department_id.name : 'No Department' }}</p>
-                    <p>Divizija: {{ Data.expand.division_id ? Data.expand.division_id.name : 'No Division' }}</p>
-                    <p>Grupė: {{ Data.expand.group_id ? Data.expand.group_id.name :'No Group' }}</p>
+                    <p>Kompanija: {{ Data.expand.company_id ? Data.expand.company_id.name : "Nėra įmonės"  }}</p>
+                    <p>Būstinė: {{ Data.expand.office_id ? Data.expand.office_id.name : "Nėra ofiso" }}</p>
+                    <p>Padalinys: {{ Data.expand.division_id ? Data.expand.division_id.name : 'Nėra padalinio' }}</p>
+                    <p>Skyrius: {{ Data.expand.department_id ? Data.expand.department_id.name : 'Nėra skyriaus' }}</p>
+                    <p>Grupė: {{ Data.expand.group_id ? Data.expand.group_id.name :'Nėra grupės' }}</p>
                 </div>
             </div>
           </div>

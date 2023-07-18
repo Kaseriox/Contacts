@@ -8,7 +8,7 @@
             <div class=" grid grid-cols-2 gap-x-32 m-12 mx-24 text-base ">   
 
                     <div class="p-6">
-                        <div class=" text-center text-2xl">Sukurti diviziją:</div>
+                        <div class=" text-center text-2xl">Atnaujinti padalinį:</div>
                         <div class="space-y-4">
                            <Input ref="NameInput" v-model="Data.name" :label="'Pavadinimas:'" :placeholder="'Įveskite pavadinimą...'"/>   
                         </div>
@@ -17,9 +17,13 @@
                     <div class="p-6">
                         <div class="text-center text-2xl">Priklauso:</div>
                         <div class="space-y-4">
-                           <template v-for="office in Offices">
-                                <Checkbox v-model="choices" :value="office.id" :label="office.name"/>
-                           </template>
+                            <vue-tags-input
+                                v-model="tag"
+                                :tags="tags"
+                                :autocomplete-items="filteredItems"
+                                :add-only-from-autocomplete="true"
+                                @tags-changed="(newTags) => (tags = newTags)"
+                                />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
                         </div>
                     </div>
@@ -35,24 +39,24 @@
     </div>
 </template>
 <script>
+import vueTagsInput from '@johmun/vue-tags-input';
 import Input from '../../../InputField/InputField.vue'
 import Select from '../../../InputField/SelectField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
-import UploadPhoto from '../../../InputField/UploadField.vue';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
-        Input, Select, UploadPhoto, Checkbox
+        Input, Select,vueTagsInput
     },
     data() {
         return {
+            tag:'',
+            tags:[],
+            autocomplete:[],
             Ready:false,
             Data:{
                 name:'',
             },
             error:false,
-            choices:[],
-            Offices:'',
         };
     },
     methods: {
@@ -69,7 +73,7 @@ export default {
             let response
             if(response === null)
             {
-                this.set_message({message:'Failed To Update Division',type:'error'})
+                this.set_message({message:'Nepavyko atnaujinti padalinio',type:'error'})
                 return
             }
             response = await this.$UpdateRecord({ Collection: 'divisions', data: this.Data, id: this.id })
@@ -84,44 +88,43 @@ export default {
                 offices_ids.push({ id: item.id, office_id: item.office_id })
             }
             for (const office of offices_ids) {
-                const found = this.choices.some((choice) => choice === office.office_id)
+                const found = this.tags.some((tag) => tag.id === office.office_id)
                 if (!found) {
-                    console.log('delete', office.id)
                     response = await this.$DeleteRecord({ Collection: 'offices_divisions', id: office.id })
                     if(response === null)
                     {
-                        this.set_message({message:'Failed To Update Division',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti padalinio',type:'error'})
                         return
                     }
                 }
             }
-            for (const choice of this.choices) {
-                const found = offices_ids.some((office) => office.office_id === choice)
+            for (const choice of this.tags) {
+                const found = offices_ids.some((office) => office.office_id === choice.id)
                 if (!found) {
-                    console.log('add', choice)
-                    response = await this.$CreateRecord({ Collection: 'offices_divisions', data: { office_id: choice, division_id: divisionid } })
+                    response = await this.$CreateRecord({ Collection: 'offices_divisions', data: { office_id: choice.id, division_id: divisionid } })
                     if(response === null)
                     {
-                        this.set_message({message:'Failed To Update Division',type:'error'})
+                        this.set_message({message:'Nepavyko atnaujinti padalinio',type:'error'})
                         return
                     }
                 }
             }
-            this.set_message({message:'Succesfully Edited Division',type:'success'})
+            this.set_message({message:'Sėkmingai atnaujintas padalinys',type:'success'})
             this.refresh()
             this.Close()
         },
         ValidateForm()
         {
             let valid = true
-            if(!(this.$refs.NameInput.value.length > 2))
+            if(!(this.$refs.NameInput.value.length > 0))
             {
-                this.$refs.NameInput.error = 'Incorrect Division Input'
+                this.$refs.NameInput.error = 'Padalinio pavadinimas yra reikalingas'
                 valid=false
             }
-            if(this.choices.length < 1)
+            if(this.tags.length < 1)
             {
-                this.error = 'Select An Office'
+                this.error = 'Pasirinkite bent vieną ofisą'
+                valid=false
             }
             return valid
         },
@@ -137,18 +140,28 @@ export default {
     computed: {
         ...mapGetters({
             id: 'Form/id',
-        })
+        }),
+        filteredItems() {
+      return this.autocomplete.filter(i => {
+        return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+      });
+    },
     },
     async created() {
-        this.Offices = (await this.$GetCollection({ Collection: 'offices', ItemsPerPage: 'All' })).items
+        const Offices = (await this.$GetCollection({ Collection: 'offices', ItemsPerPage: 'All' })).items
+        for(const record of Offices)
+        {
+            this.autocomplete.push({text:record.name,id:record.id})
+        }
         this.Data = await this.$GetSingleRecord({ Collection: 'divisions', id: this.id })
         let offices_divisions = (await this.$GetCollection({
             Collection: 'offices_divisions', ItemsPerPage: 'All', query: {
-                filter: `division_id="${this.id}"`
+                filter: `division_id="${this.id}"`,
+                expand:'office_id'
             }
         })).items
         for (const office_division of offices_divisions) {
-            this.choices.push(office_division.office_id)
+            this.tags.push({text:office_division.expand.office_id.name,id:office_division.expand.office_id.id})
         }
         this.Ready = true
     }

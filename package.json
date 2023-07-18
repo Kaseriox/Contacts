@@ -10,10 +10,12 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@johmun/vue-tags-input": "^2.1.0",
     "@vitejs/plugin-vue2": "^2.2.0",
     "debounce": "^1.2.1",
     "editorconfig": "^2.0.0",
     "jsdom": "^21.1.0",
+    "lodash": "^4.17.21",
     "pocketbase": "^0.15.2",
     "vite": "^4.0.4",
     "vue": "^2.7.14",

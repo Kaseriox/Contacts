@@ -1,12 +1,9 @@
 <template>
-    <div class="m-8">
+    <div class="m-8 overflow-hidden">
        <p class=" text-5xl mb-4">Ar tikrai norite ištrinti ofisą?</p>
        <template v-if="Data">
-            <div class="text-xl">
-                    <div class="flex flex-row">
-                        <p class="mr-1">Ofiso pavadinimas: </p>
-                        <p class="mr-1">{{ Data.name }}</p>
-                    </div>
+            <div class="text-xl whitespace-nowrap">
+                <div>Ofiso pavadinimas: {{ Data.name }}</div>
             </div>
         </template>
        <div class="flex flex-row-reverse text-3xl text-blue-900 font-bold">
@@ -44,12 +41,12 @@ methods:{
             const response = await this.$DeleteRecord({Collection:'offices',id:this.id})
             if(response)
             {
-                this.set_message({message:'Succesfully Deleted Office',type:'success'})
+                this.set_message({message:'Sėkmingai panaikintas ofisas',type:'success'})
                 this.refresh()
                 this.Close()
                 return
             }
-            this.set_message({message:'Failed To Update Office',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti ofiso',type:'error'})
 
        }
    },
