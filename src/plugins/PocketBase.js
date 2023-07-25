@@ -1,7 +1,23 @@
 import PocketBase from 'pocketbase'
 
+const CheckToken = ()=>{
+    const token  = JSON.parse(localStorage.getItem("pocketbase_auth")) &&
+    JSON.parse(localStorage.getItem("pocketbase_auth"))["token"];
+    if(token===null)
+    {
+        return null
+    }
+    return parseJwt(token)
+}
 
-
+const parseJwt = (token) => {        
+    const decode = JSON.parse(atob(token.split('.')[1]));
+    if (decode.exp * 1000 < new Date().getTime()) {
+        localStorage.removeItem("pocketbase_auth")
+        return false
+    }
+    return true
+};
 
 let PocketBasePlugin = {
     install(Vue)
@@ -95,8 +111,12 @@ let PocketBasePlugin = {
         }
         Vue.prototype.$CheckAuth = async function()
         {
-           try
-           {
+            if(!CheckToken())
+            {
+                return false
+            } 
+            try
+            {   
                 if(pb.authStore.isValid)
                 {
                     return await  pb.collection('users').authRefresh(null,{
@@ -110,7 +130,7 @@ let PocketBasePlugin = {
            }
            catch(err)
            {
-                return null
+                return false
            }
         }
         Vue.prototype.$PasswordReset = async function(email)
