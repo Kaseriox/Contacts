@@ -28,7 +28,7 @@ export default {
     methods:{
         async GetData()
         {
-            this.Data = (await this.$GetCollection({Collection:'users',ItemsPerPage:'All'})).items
+            this.Data = (await this.$GetCollection({Collection:'users',ItemsPerPage:'All'}))?.items
         },
         SetData()
         {
@@ -52,7 +52,7 @@ export default {
         SetPermissions()
         {
             let obj = {
-                edit:this.user_data?.expand.permissions_id?.edit_permissions ? this.user_data?.expand.permissions_id?.read_permissions : true ,
+                edit:this.user_data?.expand.permissions_id?.edit_permissions,
                 delete:this.user_data?.expand.permissions_id?.delete_permissions
             }
             return obj

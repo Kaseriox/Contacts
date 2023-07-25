@@ -69,9 +69,16 @@ export default {
             set_id:'Form/set_id',
             set_collection:'Form/set_collection',
             set_type:'Form/set_type',
+            set_message:'Notification/set_data',
+            set_user_data:'User/set_data'
         }),
-        HandleClick()
+        async HandleClick()
         {
+            if(await this.$GetStatus() === null)
+            {
+                this.$router.push('/')
+                return
+            }
             switch (this.type) {
                 case 'create':
                     this.CreateForm()

@@ -52,8 +52,8 @@
             <div class="mt-20 mx-6">
                 <div class="flex justify-end  ">
                     <button @click="HandleForm()"
-                        class=" p-3 px-28 rounded-md text-center text-white text-xl bg-blue-700">Sukurti</button>
-
+                        class=" p-3 px-28 rounded-md text-center text-white text-xl bg-blue-700">Sukurti
+                    </button>
                 </div>
             </div>
         </template>
@@ -194,6 +194,10 @@ export default {
                 this.$refs.NameInput.error = 'Vardas yra reikalingas'
                 valid = false
             }
+            else if (!(this.$refs.NameInput.value.length < 31)) {
+                this.$refs.NameInput.error = 'Vardas yra per ilgas (max 30 simbolių)'
+                valid = false
+            }
             else if (!nameRegex.test(this.$refs.NameInput.value)) {
                 this.$refs.NameInput.error = 'Vardas turi būti tik iš raidžių'
                 valid = false
@@ -208,6 +212,10 @@ export default {
                 this.$refs.SurnameInput.error = 'Pavardė yra reikalinga'
                 valid = false
             }
+            else if (!(this.$refs.SurnameInput.value.length < 31)) {
+                this.$refs.SurnameInput.error = 'Pavardė yra per ilga (max 30 simbolių)'
+                valid = false
+            }
             else if (!nameRegex.test(this.$refs.SurnameInput.value)) {
                 this.$refs.SurnameInput.error = 'Pavardė turi būti tik iš raidžių'
                 valid = false
@@ -217,6 +225,10 @@ export default {
                 this.$refs.PositionInput.error = 'Pozicijos pavadinimas yra reikalingas'
                 valid = false
             }
+            else if (!(this.$refs.PositionInput.value.length < 41)) {
+                this.$refs.PositionInput.error = 'Pozicijos pavadinimas yra per ilgas (max 20 simbolių)'
+                valid = false
+            }
 
             if (!(this.$refs.EmailInput.value.length > 0)) {
                 this.$refs.EmailInput.error = 'Elektroninis paštas yra reikalingas'
@@ -224,6 +236,10 @@ export default {
             }
             else if (!emailRegex.test(this.$refs.EmailInput.value)) {
                 this.$refs.EmailInput.error = 'Neteisingas elektroninis paštas'
+                valid = false
+            }
+            else if (!(this.$refs.EmailInput.value.length < 51)) {
+                this.$refs.EmailInput.error = 'Elektroninis paštas yra per ilgas (max 50 simbolių)'
                 valid = false
             }
 
@@ -247,7 +263,6 @@ export default {
                 this.$refs.OfficeSelect.error = 'Prašau pasirinkti ofisą'
                 valid = false
             }
-
             return valid
         },
         ResetErrors() {

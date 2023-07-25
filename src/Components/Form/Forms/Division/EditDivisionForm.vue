@@ -22,6 +22,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti ofisą'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
@@ -71,12 +72,12 @@ export default {
                 return
             }
             let response
+            response = await this.$UpdateRecord({ Collection: 'divisions', data: this.Data, id: this.id })
             if(response === null)
             {
                 this.set_message({message:'Nepavyko atnaujinti padalinio',type:'error'})
                 return
             }
-            response = await this.$UpdateRecord({ Collection: 'divisions', data: this.Data, id: this.id })
             const divisionid = response.id
             let many = (await this.$GetCollection({
                 Collection: 'offices_divisions', ItemsPerPage: 'All', query: {
@@ -119,6 +120,11 @@ export default {
             if(!(this.$refs.NameInput.value.length > 0))
             {
                 this.$refs.NameInput.error = 'Padalinio pavadinimas yra reikalingas'
+                valid=false
+            }
+            else if(!(this.$refs.NameInput.value.length < 41))
+            {
+                this.$refs.NameInput.error = 'Padalinio pavadinimas yra per ilgas (max 40 simbolių)'
                 valid=false
             }
             if(this.tags.length < 1)

@@ -22,6 +22,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti skyrių'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
@@ -98,6 +99,11 @@ export default {
             if(!(this.$refs.NameInput.value.length > 0))
             {
                 this.$refs.NameInput.error = 'Grupės pavadinimas yra reikalingas'
+                valid=false
+            }
+            else if(!(this.$refs.NameInput.value.length < 31))
+            {
+                this.$refs.NameInput.error = 'Grupės pavadinimas yra per ilgas (max 30 simbolių)'
                 valid=false
             }
             if(this.tags.length < 1)

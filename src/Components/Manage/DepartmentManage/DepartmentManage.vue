@@ -35,7 +35,7 @@ export default {
             const obj = {
               collection:'departments',
               id:contact.id,
-              "Departamento pavadinimas":contact.name,
+              "Skyriaus pavadinimas":contact.name,
             }
             arr.push(obj)
         }
@@ -43,7 +43,7 @@ export default {
     },
     SetFields()
     {
-        return ["Departamento pavadinimas"]
+        return ["Skyriaus pavadinimas"]
     },
     SetPermissions()
     {

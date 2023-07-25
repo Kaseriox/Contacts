@@ -77,6 +77,7 @@ export default {
       set_item_count_per_page({commit},payload)
       {
         commit('SET_ITEM_COUNT_PER_PAGE',payload)
+        commit('SET_PAGE', -state.Page + 1)
       },
       set_filter({commit,state},payload)
       {
@@ -90,10 +91,12 @@ export default {
            TempFilter.push(payload[0]) 
         }
         commit('SET_FILTER',TempFilter)
+        commit('SET_PAGE', -state.Page + 1)
       },
-      set_search({commit},payload)
+      set_search({commit,state},payload)
       {
         commit('SET_SEARCH',payload)
+        commit('SET_PAGE', -state.Page + 1)
       }
     }
 }

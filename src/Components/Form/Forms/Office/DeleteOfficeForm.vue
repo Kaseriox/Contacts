@@ -38,7 +38,16 @@ methods:{
        }
        if(Response === 'Yes')
        {
-            const response = await this.$DeleteRecord({Collection:'offices',id:this.id})
+            let response = await this.$GetCollection({Collection:'employees',ItemsPerPage:'All',query:{
+                filter:`office_id='${this.id}'`
+            }})
+            if(response.totalItems !== 0)
+            {
+                this.set_message({message:'Ofisas priklauso vienam ar daugiau kontaktų',type:'error'})
+                return
+            }
+
+            response = await this.$DeleteRecord({Collection:'offices',id:this.id})
             if(response)
             {
                 this.set_message({message:'Sėkmingai panaikintas ofisas',type:'success'})

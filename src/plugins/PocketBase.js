@@ -128,7 +128,9 @@ let PocketBasePlugin = {
         {
             try
             {
+
                 return await pb.health.check()
+
             }
             catch(err)
             {

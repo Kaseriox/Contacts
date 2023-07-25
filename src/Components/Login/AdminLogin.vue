@@ -54,17 +54,18 @@ import Input from '../InputField/InputField.vue'
             return
           }
           if(Login.status === 0)
-          {
+          { 
+            
             this.set_message({message:'Serveris neatsako',type:'error'})
             return
           }
           if(Login.token !== undefined)
           {
                 this.$router.push('/')
-                await this.set_user_data(Login)
+                this.set_user_data(Login)
                 this.set_message({message:'Sėkmingai prisijungta',type:'success'})
           }
-
+         
         },
         ChangeComponent()
         {
@@ -75,7 +76,13 @@ import Input from '../InputField/InputField.vue'
           this.$router.push('/')
         }
       },
-  
+      async beforeCreate()
+      {
+        if(await this.$CheckAuth()!==false)
+        {
+          this.$router.push('/')
+        }
+      }
     };
   </script>
   

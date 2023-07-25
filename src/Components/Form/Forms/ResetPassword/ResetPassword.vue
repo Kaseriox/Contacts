@@ -80,9 +80,15 @@ export default {
             {
                 if(this.$refs[ref].value.length < 8)
                 {
-                    this.error = 'Slaptažodis turi būti nors iš 8 simbolių'
+                    this.$refs[ref].error = 'Slaptažodis turi būti nors iš 8 simbolių'
                     valid=false
                 }
+            }
+
+            if(this.Data.password !== this.Data.passwordConfirm)
+            {
+                this.error = 'Nauji Slaptažodžiai nesutampa'
+                valid = false
             }
             return valid
         },

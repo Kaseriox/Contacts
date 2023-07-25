@@ -1,7 +1,7 @@
 <template>
     <div>
         <p>{{ label }}</p>
-        <select :disabled="!open" class="w-full border rounded-lg p-3 " :value="value" @input="$emit('input',$event.target.value)">
+        <select :disabled="!open" class="w-full border rounded-lg p-3 " :value="value" @change="$emit('input',$event.target.value)">
             <option value='' selected>{{placeholder}}</option>
             <option v-for="Item in options" :key="Item.id" :value="Item.id">{{ Item.name }}</option>
         </select>

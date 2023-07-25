@@ -1,8 +1,6 @@
 <template>
     <div class="grid grid-cols-4">
-        <template v-for="Contact in data">
-            <Card :Data="Contact"/>
-        </template>
+        <Card v-for="Contact in data"  :Data="Contact" :key="Contact.id"/>
     </div>
 
 </template>

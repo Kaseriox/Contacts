@@ -191,6 +191,10 @@ export default {
                 this.$refs.NameInput.error = 'Vardas yra reikalingas'
                 valid = false
             }
+            else if (!(this.$refs.NameInput.value.length < 31)) {
+                this.$refs.NameInput.error = 'Vardas yra per ilgas (max 30 simbolių)'
+                valid = false
+            }
             else if (!nameRegex.test(this.$refs.NameInput.value)) {
                 this.$refs.NameInput.error = 'Vardas turi būti tik iš raidžių'
                 valid = false
@@ -205,6 +209,10 @@ export default {
                 this.$refs.SurnameInput.error = 'Pavardė yra reikalinga'
                 valid = false
             }
+            else if (!(this.$refs.SurnameInput.value.length < 31)) {
+                this.$refs.SurnameInput.error = 'Pavardė yra per ilga (max 30 simbolių)'
+                valid = false
+            }
             else if (!nameRegex.test(this.$refs.SurnameInput.value)) {
                 this.$refs.SurnameInput.error = 'Pavardė turi būti tik iš raidžių'
                 valid = false
@@ -212,6 +220,10 @@ export default {
 
             if (!(this.$refs.PositionInput.value.length > 0)) {
                 this.$refs.PositionInput.error = 'Pozicijos pavadinimas yra reikalingas'
+                valid = false
+            }
+            else if (!(this.$refs.PositionInput.value.length < 41)) {
+                this.$refs.PositionInput.error = 'Pozicijos pavadinimas yra per ilgas (max 20 simbolių)'
                 valid = false
             }
 
@@ -223,13 +235,12 @@ export default {
                 this.$refs.EmailInput.error = 'Neteisingas elektroninis paštas'
                 valid = false
             }
-
-            if(!this.$refs.PhoneInput.value.length > 0 )
-            {
-                this.$refs.PhoneInput.error = 'Telefono numeris yra reikalingas'
-                valid=false
+            else if (!(this.$refs.EmailInput.value.length < 51)) {
+                this.$refs.EmailInput.error = 'Elektroninis paštas yra per ilgas (max 50 simbolių)'
+                valid = false
             }
-            else if (!phoneRegex.test(this.$refs.PhoneInput.value)) 
+
+            if (this.$refs.PhoneInput.value.length > 0 && !phoneRegex.test(this.$refs.PhoneInput.value)) 
             {
                 this.$refs.PhoneInput.error = 'Neteisingas telefono numeris'
                 valid = false
@@ -249,7 +260,6 @@ export default {
                 this.$refs.OfficeSelect.error = 'Prašau pasirinkti ofisą'
                 valid = false
             }
-
             return valid
         },
         ResetErrors()

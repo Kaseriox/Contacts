@@ -1,5 +1,4 @@
 <template>
-<div>
     <div v-if="type === 'success'" class="flex items-center w-full p-4 text-gray-500 bg-white rounded-lg shadow">
         <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -47,7 +46,7 @@
             </svg>
         </button>
     </div>
-</div>
+
 </template>
   
 <script>

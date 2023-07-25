@@ -44,6 +44,7 @@
               :tags="tags"
               :autocomplete-items="filteredItems"
               :add-only-from-autocomplete="true"
+              :placeholder="'Pridėti privilegijas'"
               @tags-changed="(newTags) => (tags = newTags)"
             />
           </div>
@@ -104,9 +105,6 @@ export default {
         {
             text:"edit_companies"
         },
-        {
-            text:"read_permissions"
-        }
       ],
       Ready: true,
       Data: {
@@ -128,7 +126,7 @@ export default {
         delete_permissions: false,
         edit_companies: false,
         delete_companies: false,
-        read_permissions:false
+        read_permissions:true
       },
     };
   },
@@ -185,11 +183,19 @@ export default {
         this.$refs.NameInput.error = "Vardas yra reikalingas";
         valid = false;
       }
+      else if (!(this.$refs.NameInput.value.length < 26)) {
+        this.$refs.NameInput.error = "Vardas yra per ilgas (max 25 simboliai)";
+        valid = false;
+      }
       if (!(this.$refs.EmailInput.value.length > 0)) {
         this.$refs.EmailInput.error = "Elektroninio pašto laukas yra būtinas";
         valid = false;
       } else if (!emailRegex.test(this.$refs.EmailInput.value)) {
         this.$refs.EmailInput.error = "Neteisingas elektroninis paštas";
+        valid = false;
+      }
+      else if (!(this.$refs.EmailInput.value.length < 51)) {
+        this.$refs.EmailInput.error = "Elektroninio paštas per ilgas (max 50 simbolių)";
         valid = false;
       }
 

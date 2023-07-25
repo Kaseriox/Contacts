@@ -67,7 +67,11 @@ export default {
                 this.$refs.CompanyInput.error = 'Įmonės pavadinimas yra reikalingas'
                 valid=false
             }
-            
+            else if(!(this.$refs.CompanyInput.value.length < 41))
+            {
+                this.$refs.CompanyInput.error = 'Įmonės pavadinimas per ilgas (max 40 simbolių)'
+                valid=false
+            }
             return valid
         },
         ResetErrors()

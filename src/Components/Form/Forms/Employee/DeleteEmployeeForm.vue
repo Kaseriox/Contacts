@@ -39,6 +39,7 @@ methods:{
        }
        if(Response === 'Yes')
        {
+            
             const response = await this.$DeleteRecord({Collection:'employees',id:this.id})
             if(response)
             {

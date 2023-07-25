@@ -22,6 +22,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti padalinį'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
@@ -98,6 +99,11 @@ export default {
             if(!(this.$refs.NameInput.value.length > 0))
             {
                 this.$refs.NameInput.error = 'Skyriaus pavadimas reikalingas'
+                valid=false
+            }
+            else if(!(this.$refs.NameInput.value.length < 41))
+            {
+                this.$refs.NameInput.error = 'Skyriaus pavadimas per ilgas (max 40 simbolių)'
                 valid=false
             }
             if(this.tags.length < 1)

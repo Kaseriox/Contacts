@@ -1,15 +1,25 @@
 <template>
     <div class="flex flex-row justify-evenly text-custom-white text-2xl">
-        <div @click="PushRoute('/')" class=" hover:text-blue-400 cursor-pointer">Kontaktai</div>
-        <div @click="PushRoute('/company')" class=" hover:text-blue-400 cursor-pointer">Įmonės</div>
-        <div @click="PushRoute('/structure')" class=" hover:text-blue-400 cursor-pointer">Struktūra</div>
-        <div @click="PushRoute('/account')" class=" hover:text-blue-400 cursor-pointer">Paskyros</div>
+        <template v-for="item in pages">
+            <div v-if="$route.path === item.route" class="text-blue-400 select-none">{{item.name}}</div>
+            <div v-else @click="PushRoute(item.route)" class=" hover:text-blue-400 cursor-pointer select-none">{{item.name}}</div>
+        </template>
     </div>
 </template>
   
 <script>
 export default {
-
+    data()
+    {
+        return{
+            pages:[
+                {route:'/',name:'Kontaktai'},
+                {route:'/company',name:'Įmonės'},
+                {route:'/structure',name:'Struktūra'},
+                {route:'/account',name:'Paskyros'}
+            ]
+        }
+    },
     methods:{
     PushRoute(route)
     {
@@ -18,6 +28,8 @@ export default {
             this.$router.push(route)
         }
     }
+
 },
+
 };
 </script>

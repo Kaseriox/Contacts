@@ -1,7 +1,8 @@
+import { createLocalVue,mount} from '@vue/test-utils'
 import Vuex from 'vuex'
 import Store from '../../src/Store/store'
-import PocketBasePlugin from './plugins/PocketBase';
-import './styles.css'
+import PocketBasePlugin from '../../src/plugins/PocketBase'
+import '../../src/styles.css'
 
 var _ = require('lodash')
 
@@ -15,21 +16,34 @@ function createWrapper(page, overrides) {
         localVue,
         store,
         mocks: {
-            $axios: {
-                get: () => {
-                    return new Promise(resolve => resolve({}))
-                },
-                put: () => Promise.resolve({}),
-                post: () => Promise.resolve({}),
+            $CreateRecord()
+            {
+                return Promise.resolve({
+                    id:'1'
+                })
             },
-            
+            $DeleteRecord()
+            {
+                return Promise.resolve({
+                    id:'1'
+                })
+            },
+            $GetStatus()
+            {
+                return Promise.resolve(true)
+            },
             $router:
             {
                 push:()=>true
             },
+            $route:
+            {
+                path:()=>true
+            }
         },
         stubs: {
-            "router-link":true
+            "router-link":true,
+            "iconify-icon":true,
         },
         propsData: {},
         

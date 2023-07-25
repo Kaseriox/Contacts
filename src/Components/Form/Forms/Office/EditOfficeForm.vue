@@ -11,8 +11,6 @@
                 <div class="p-6">
                     <div class=" text-center text-2xl">Atnaujinti ofisą:</div>
                     <div class="space-y-4">
-                        <Input ref="NameInput" v-model="Data.name" :label="'Pavadinimas:'"
-                            :placeholder="'Įveskite pavadinimą...'" />
                         <Input ref="StreetInput" v-model="Data.street" :label="'Gatvė:'"
                             :placeholder="'Įveskite gatvę...'" />
                         <Input ref="StreetNumberInput" v-model="Data.street_number" :label="'Gatvės numeris:'"
@@ -32,6 +30,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti įmonę'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                         <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
@@ -85,6 +84,7 @@ export default {
             if (!this.ValidateForm()) {
                 return
             }
+            this.Data.name = this.Data.street.concat(' ',this.Data.street_number,', ', this.Data.city,', ', this.Data.country)
             let response
             response = await this.$UpdateRecord({ Collection: 'offices', data: this.Data, id: this.id })
             if(response === null)
@@ -130,20 +130,24 @@ export default {
         },
         ValidateForm() {
             let valid = true
-            const numberRegex = /^\d+$/
-            if(!(this.$refs.NameInput.value.length > 0))
-            {
-                this.$refs.NameInput.error = 'Ofiso pavadinimas yra reikalingas'
-                valid=false
-            }
             if(!(this.$refs.StreetInput.value.length > 0))
             {
                 this.$refs.StreetInput.error = 'Ofiso gatvė yra reikalingas'
                 valid=false
             }
-            if(!(numberRegex.test(this.$refs.StreetNumberInput.value)))
+            if(!(this.$refs.StreetInput.value.length < 71))
+            {
+                this.$refs.StreetInput.error = 'Ofiso gatvė yra per ilga (max 70 simbolių)'
+                valid=false
+            }
+            if(!(this.$refs.StreetNumberInput.value.length > 0))
             {
                 this.$refs.StreetNumberInput.error = "Ofiso gatvės numeris yra reikalingas"
+                valid=false
+            }
+            if(!(this.$refs.StreetNumberInput.value.length < 11))
+            {
+                this.$refs.StreetNumberInput.error = "Ofiso gatvės numeris yra per ilgas (max 10 simbolių)"
                 valid=false
             }
             if(!(this.$refs.CityInput.value.length > 0))
@@ -151,9 +155,19 @@ export default {
                 this.$refs.CityInput.error = 'Ofiso miestas yra reikalingas'
                 valid=false
             }
+            if(!(this.$refs.CityInput.value.length < 31))
+            {
+                this.$refs.CityInput.error = 'Ofiso miestas yra per ilgas (max 40 simbolių)'
+                valid=false
+            }
             if(!(this.$refs.CountryInput.value.length > 0))
             {
                 this.$refs.CountryInput.error = 'Ofiso valstybė yra reikalinga'
+                valid=false
+            }
+            if(!(this.$refs.CountryInput.value.length < 31))
+            {
+                this.$refs.CountryInput.error = 'Ofiso valstybė yra per ilga (max 30 simbolių)'
                 valid=false
             }
             if(this.tags.length < 1)
@@ -193,6 +207,7 @@ export default {
                 expand:'company_id'
             }
         })).items
+        console.log(companies_offices)
         for (const company_office of companies_offices) {
             this.tags.push({text:company_office.expand.company_id.name,id:company_office.expand.company_id.id})
         }

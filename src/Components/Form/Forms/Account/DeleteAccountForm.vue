@@ -1,6 +1,6 @@
 <template>
     <div class="m-8 overflow-hidden">
-       <p class=" text-4xl mb-4">Ar tikrai norite ištrinti kontaktą?</p>
+       <p class=" text-4xl mb-4">Ar tikrai norite ištrinti paskyrą?</p>
        <template v-if="Data">
             <div class="text-xl whitespace-nowrap">
                     <div>Paskyros vardas: {{ Data.username }} </div>

@@ -51,9 +51,10 @@
             this.set_message({message:'Serveris neatsako',type:'error'})
             return
           }
-          if(Reset.token !== undefined)
+
+          if(Reset === true)
           {
-              this.set_message({message:'Slaptažodžio pakeitimas žinutė sėkmingai išsiųsta',type:'success'})
+              this.set_message({message:'Slaptažodžio pakeitimas sėkmingai išsiųsta',type:'success'})
           }
         },
         Back()

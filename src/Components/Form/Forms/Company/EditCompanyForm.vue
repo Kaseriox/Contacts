@@ -5,17 +5,17 @@
         </div>
 
         <template v-if="Data">
-            <div class="m-12 mx-24 text-base ">   
+            <div class="text-base w-96 mr-24 mb-4">   
                     <div>
-                        <div class="text-3xl mb-7">Redaguoti įmonę: </div>
+                        <div class="text-3xl mb-7">Pridėkite naują įmonę: </div>
                         <div class="space-y-4">
-                           <Input ref="CompanyInput" v-model="Data.name" :label="'Įmonės pavadinimas: '" :placeholder="'Iveskite įmonės pavadinimą...'"/>   
+                           <Input ref="CompanyInput" v-model="Data.name" :label="'Įmonės pavadinimas:'" :placeholder="'Įveskite įmonės pavadinimą...'"/>   
                         </div>
                     </div>
             </div>
-            <div class="m-12 mx-24">
+            <div>
                 <div>
-                    <button @click="HandleForm()" class=" p-3 px-28 rounded-md text-center text-white text-xl bg-blue-700">Redaguoti</button>
+                    <button @click="HandleForm()" class=" p-3 px-28 rounded-md text-center text-white text-xl bg-blue-700">Pridėti</button>
                 </div>
             </div>
         </template>
@@ -68,7 +68,11 @@ export default {
                 this.$refs.CompanyInput.error = 'Įmonės pavadinimas yra reikalingas'
                 valid=false
             }
-            
+            else if(!(this.$refs.CompanyInput.value.length < 41))
+            {
+                this.$refs.CompanyInput.error = 'Įmonės pavadinimas per ilgas (max 40 simbolių)'
+                valid=false
+            }
             return valid
         },
         ResetErrors()

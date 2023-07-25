@@ -9,9 +9,9 @@
 
                     <div class="p-6">
                         <div class="space-y-6">
-                           <Input  class="mt-6" ref="NameInput" v-model="Data.username" :open="user_data.expand.permissions_id.edit_permissions" :label="'Vardas:'" :placeholder="'Įveskite vardą...'"/>
-                           <Input ref="EmailInput" v-model="Data.email" :open="user_data.expand.permissions_id.edit_permissions" :label="'Elektroninis paštas:'" :placeholder="'Įveskite el. paštą...'" :icon="{type:'material-symbols:mail',size:24}"/>    
-                            <UploadPhoto v-model="Data.avatar" :open="user_data.expand.permissions_id.edit_permissions"/>
+                           <Input  class="mt-6" ref="NameInput" v-model="Data.username" :open="user_data?.expand.permissions_id.edit_permissions" :label="'Vardas:'" :placeholder="'Įveskite vardą...'"/>
+                           <Input ref="EmailInput" v-model="Data.email" :open="user_data?.expand.permissions_id.edit_permissions" :label="'Elektroninis paštas:'" :placeholder="'Įveskite el. paštą...'" :icon="{type:'material-symbols:mail',size:24}"/>    
+                            <UploadPhoto v-model="Data.avatar" :open="user_data?.expand.permissions_id.edit_permissions"/>
                         </div>
                     </div>
                     
@@ -23,6 +23,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti privilegijas'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                         </div>
@@ -84,9 +85,6 @@ export default {
         {
             text:"edit_companies"
         },
-        {
-            text:"read_permissions"
-        }
         ],
             Ready:false,
             Data:{
@@ -108,7 +106,7 @@ export default {
                     delete_permissions:false,
                     edit_companies:false,
                     delete_companies:false,
-                    read_permissions:false,
+                    read_permissions:true,
                },
             permission_id:''
         };
@@ -155,30 +153,32 @@ export default {
         },
         ValidateForm()
         {
-            let valid = true
-            const emailRegex= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            if(/\s/g.test(this.$refs.NameInput.value))
-            {
-                this.$refs.NameInput.error = 'Vardas negali turėti tarpų'
-                valid=false
+            let valid = true;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (/\s/g.test(this.$refs.NameInput.value)) {
+                this.$refs.NameInput.error = "Vardas negali turėti tarpų";
+                valid = false;
+            } else if (!(this.$refs.NameInput.value.length > 0)) {
+                this.$refs.NameInput.error = "Vardas yra reikalingas";
+                valid = false;
             }
-            else if(!(this.$refs.NameInput.value.length > 0))
-            {
-                this.$refs.NameInput.error = 'Vardas yra reikalingas'
-                valid=false
+            else if (!(this.$refs.NameInput.value.length < 26)) {
+                this.$refs.NameInput.error = "Vardas yra per ilgas (max 25 simboliai)";
+                valid = false;
             }
-            if(!(this.$refs.EmailInput.value.length > 0))
-            {
-                this.$refs.EmailInput.error = 'Elektroninio pašto laukas yra būtinas'
-                valid=false
+            if (!(this.$refs.EmailInput.value.length > 0)) {
+                this.$refs.EmailInput.error = "Elektroninio pašto laukas yra būtinas";
+                valid = false;
+            } else if (!emailRegex.test(this.$refs.EmailInput.value)) {
+                this.$refs.EmailInput.error = "Neteisingas elektroninis paštas";
+                valid = false;
             }
-            else if(!emailRegex.test(this.$refs.EmailInput.value))
-            {
-                this.$refs.EmailInput.error = 'Neteisingas elektroninis paštas'
-                valid=false
+            else if (!(this.$refs.EmailInput.value.length < 51)) {
+                this.$refs.EmailInput.error = "Elektroninio paštas per ilgas (max 50 simbolių)";
+                valid = false;
             }
-            
-            return valid
+
+            return valid;
         },
         ResetErrors()
         {
@@ -204,6 +204,7 @@ export default {
         this.Data = await this.$GetSingleRecord({Collection:'users',id:this.id})
         this.permissions = await this.$GetSingleRecord({Collection:'user_permissions',id:this.Data.permissions_id})
         this.permission_id = this.permissions.id
+        
         delete this.permissions.expand
         delete this.permissions.collectionId
         delete this.permissions.collectionName

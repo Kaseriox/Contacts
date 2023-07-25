@@ -22,6 +22,7 @@
                                 :tags="tags"
                                 :autocomplete-items="filteredItems"
                                 :add-only-from-autocomplete="true"
+                                :placeholder="'Pridėti padalinį'"
                                 @tags-changed="(newTags) => (tags = newTags)"
                                 />
                            <div v-if="error" class="text-center text-custom-red">{{ error }}</div>
@@ -41,11 +42,10 @@
 <script>
 import VueTagsInput from "@johmun/vue-tags-input";
 import Input from '../../../InputField/InputField.vue'
-import Checkbox from '../../../InputField/CheckboxField.vue'
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
-        Input, Checkbox, VueTagsInput
+        Input, VueTagsInput
     },
     data() {
         return {
@@ -75,6 +75,7 @@ export default {
             if(response === null)
             {
                 this.set_message({message:'Nepavyko atnaujinti skyriaus',type:'error'})
+                return
             }
             const departmentid = response.id
                 let many = (await this.$GetCollection({
@@ -119,6 +120,11 @@ export default {
             if(!(this.$refs.NameInput.value.length > 0))
             {
                 this.$refs.NameInput.error = 'Skyriaus pavadimas reikalingas'
+                valid=false
+            }
+            else if(!(this.$refs.NameInput.value.length < 41))
+            {
+                this.$refs.NameInput.error = 'Skyriaus pavadimas per ilgas (max 40 simbolių)'
                 valid=false
             }
             if(this.tags.length < 1)

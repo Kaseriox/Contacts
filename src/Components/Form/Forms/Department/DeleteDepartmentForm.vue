@@ -38,7 +38,16 @@ methods:{
        }
        if(Response === 'Yes')
        {
-            const response = await this.$DeleteRecord({Collection:'departments',id:this.id})
+            let response = await this.$GetCollection({Collection:'employees',ItemsPerPage:'All',query:{
+                filter:`department_id='${this.id}'`
+            }})
+            if(response.totalItems !== 0)
+            {
+                this.set_message({message:'Skyrius priklauso vienam ar daugiau kontaktų',type:'error'})
+                return
+            }
+
+            response = await this.$DeleteRecord({Collection:'departments',id:this.id})
             if(response !== null)
             {
                 this.set_message({message:'Sėkmingai panaikintas skyrius',type:'success'})
@@ -46,7 +55,7 @@ methods:{
                 this.Close()
                 return
             }
-            this.set_message({message:'Nepavyko panaikinti skyrius',type:'error'})
+            this.set_message({message:'Nepavyko panaikinti skyriaus',type:'error'})
        }
    },
    async GetData()

@@ -3,22 +3,22 @@
         <table class="w-full text-base text-left">
             <thead class="text-xs bg-custom-lightgray">
                 <tr>
-                    <th scope="col" class="px-6 py-3" v-for="field in fields" :key="field">
+                    <th scope="col" class="px-6 py-3 " v-for="field in fields" :key="field">
                         {{ field }}
                     </th>
-                    <th v-if="permissions?.edit || permissions?.delete" scope="col" class="px-6 py-3">
+                    <th v-if="permissions?.edit || permissions?.delete" scope="col" class="px-6 py-3 text-center">
                         Veiksmai
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr class=" bg-custom-white border-b" v-for="record in data" :key="record.id">
-                    <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap" v-for="field in fields" :key="field">
+                    <th scope="row" class="px-6 py-4 font-medium max-w-xs  overflow-hidden " v-for="field in fields" :key="field">
                         {{ record[field] }}
                     </th>
-                    <th  scope="row" class="px-6 py-4 bg-custom-white flex flex-row space-x-4">
-                        <FormButton v-if="permissions?.edit" :type="'edit'" :collection="record.collection" :id="record.id" />
-                        <FormButton v-if="permissions?.delete" :type="'delete'" :collection="record.collection" :id="record.id"/>
+                    <th v-if="permissions?.edit || permissions?.delete" scope="row" class="px-6 py-4 bg-custom-white flex flex-row justify-center">
+                        <FormButton class="mr-2" v-if="permissions?.edit" :type="'edit'" :collection="record.collection" :id="record.id" />
+                        <FormButton class="ml-2" v-if="permissions?.delete" :type="'delete'" :collection="record.collection" :id="record.id"/>
                     </th>
                 </tr>
             </tbody>

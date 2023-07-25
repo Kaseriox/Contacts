@@ -17,22 +17,32 @@ export default {
     ...mapActions({
       set_user_data:'User/set_data',
       set_message:'Notification/set_data',
-      set_status:'Status/set_status'
     }),
+    
+  },
+  watch:{
+    async '$route.path'()
+    {
+            if(await this.$GetStatus() === null)
+            {
+                this.set_user_data(undefined)
+                this.set_message({message:'Serveris neatsako',type:'error'})
+                return
+            }
+            this.set_user_data(await this.$CheckAuth())
+    }
   },
   async beforeCreate()
-  {
-    if(await this.$GetStatus() !== null)
     {
-      this.set_status('online')
-      this.set_user_data(await this.$CheckAuth())
-      
+      if(await this.$GetStatus() !== null)
+      {
+        this.set_user_data(await this.$CheckAuth())
+      }
+      else
+      {
+        this.set_message({message:'Serveris neatsako',type:'error'})
+      }
     }
-    else
-    {
-      this.set_message({message:'Serveris neatsako',type:'error'})
-    }
-  }
 };
 </script>
 

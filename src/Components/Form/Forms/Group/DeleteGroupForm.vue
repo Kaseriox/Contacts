@@ -38,7 +38,16 @@ methods:{
        }
        if(Response === 'Yes')
        {
-            const response = await this.$DeleteRecord({Collection:'groups',id:this.id})
+            let response = await this.$GetCollection({Collection:'employees',ItemsPerPage:'All',query:{
+                filter:`group_id='${this.id}'`
+            }})
+            if(response.totalItems !== 0)
+            {
+                this.set_message({message:'Grupė priklauso vienam ar daugiau kontaktų',type:'error'})
+                return
+            }
+
+            response = await this.$DeleteRecord({Collection:'groups',id:this.id})
             if(response !== null)
             {
                 this.set_message({message:'Sėkmingai panaikinta grupė',type:'success'})
